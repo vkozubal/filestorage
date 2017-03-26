@@ -1,5 +1,5 @@
 import template from './app.html';
-import AppCtrl from './app-ctrl';
+import AppCtrl from './app-controller';
 
 import './app.less';
 

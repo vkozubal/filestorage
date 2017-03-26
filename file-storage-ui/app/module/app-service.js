@@ -6,8 +6,8 @@ export default class AppSvc {
   }
 
   getData() {
-    return this.$http
-      .get('/appName')
+    return this
+      .$http.get('api/appName')
       .then(response => response.data);
   }
 }

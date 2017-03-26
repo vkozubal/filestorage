@@ -3,7 +3,7 @@ import mainApp from './module';
 
 import './index.less';
 
-const appName = 'angular-webpack-seed';
+const appName = 'file-storage';
 const module = angular.module(appName, [
   mainApp
 ]);

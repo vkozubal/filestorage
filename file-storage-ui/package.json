@@ -1,27 +1,19 @@
 {
-  "name": "angular-webpack-seed",
+  "name": "file-storage-ui",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/my-js-ventures/angular-webpack-seed.git"
-  },
   "scripts": {
-    "start": "webpack-dev-server",
+    "dev": "NODE_ENV=development webpack-dev-server --progress",
+    "build": "NODE_ENV=production webpack --progress",
     "eslint": "eslint ."
   },
-  "author": "Gopikrishna Sathyamurthy",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/my-js-ventures/angular-webpack-seed/issues"
-  },
-  "homepage": "https://github.com/my-js-ventures/angular-webpack-seed#readme",
   "dependencies": {
     "angular": "^1.5.5",
     "angular-ui-router": "^0.2.18",
     "ng2-table": "^1.3.2"
   },
   "devDependencies": {
+    "path": "^0.12.7",
     "babel-core": "^6.8.0",
     "babel-eslint": "^6.0.4",
     "babel-loader": "^6.2.4",

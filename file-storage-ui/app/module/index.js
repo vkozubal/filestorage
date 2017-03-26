@@ -1,9 +1,9 @@
 import angular from 'angular';
 
-import AppSvc from './app-svc';
+import AppService from './app-service';
 import app from './app';
 
 export default angular.module('module', [])
   .directive('app', app)
-  .service('AppSvc', AppSvc)
+  .service('AppSvc', AppService)
   .name;

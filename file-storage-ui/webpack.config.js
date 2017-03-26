@@ -1,6 +1,12 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Webpack = require('webpack');
+const packageJSON = require('./package.json');
+const path = require('path');
+
+const PATHS = {
+  build: path.join(__dirname, 'target', 'classes', 'META-INF', 'resources', 'webjars', packageJSON.name, packageJSON.version)
+};
 
 module.exports = {
   entry: [
@@ -9,7 +15,7 @@ module.exports = {
     './app/index.js'
   ],
   output: {
-    path: __dirname + '/dist',
+    path: PATHS.build,
     filename: 'index.js'
   },
   module: {
@@ -40,11 +46,9 @@ module.exports = {
     contentBase: './',
     hot: true,
     proxy: {
-      '/appName': {
-        target: 'http://localhost:8080/api/index.json',
-        rewrite(req) {
-          req.url = `?${req.url}`;
-        }
+      "/api": {
+        target: "http://localhost:8080/mock",
+        pathRewrite: {"^([^.?]+)(.*)$" : "$1$2.json"}
       }
     }
   },
