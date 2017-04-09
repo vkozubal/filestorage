@@ -1,0 +1,14 @@
+<p-growl [value]="msgs"></p-growl>
+
+<p-fileUpload name="file" url="api/files"
+              (onUpload)="onUpload($event)"
+              auto="auto"
+              multiple="multiple">
+
+  <template pTemplate type="content" >
+      <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+      <div *ngIf="!uploadedFiles.length">
+        Choose files to upload. You can select more than one file at a time.
+      </div>
+  </template>
+</p-fileUpload>
