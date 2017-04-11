@@ -1,0 +1,44 @@
+<div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+  <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+  <input #gb type="text" pInputText size="50" placeholder="Search for ">
+</div>
+<p-dataTable [value]="files"
+             scrollable="true"
+             scrollHeight="500px"
+             [rows]="files?.length"
+             virtualScroll="virtualScroll"
+             selectionMode="single"
+             [(selection)]="selectedFile" dataKey="id"
+             (onRowSelect)="onRowSelect($event)"
+             (onRowDblclick)="onRowDblclick($event)"
+             [globalFilter]="gb" #dt>
+
+  <p-column field="fileName" header="File Name" [sortable]="true"
+            [filter]="true" filterMatchMode="contains">
+  </p-column>
+
+  <p-column field="metadata.uploadDate" header="Upload Date" [sortable]="true"
+            [filter]="true" filterMatchMode="contains">
+    <template let-file="rowData" pTemplate="body">
+      {{file?.metadata?.uploadDate | date}}
+    </template>
+  </p-column>
+
+  <p-column field="contentType" header="Content Type" [sortable]="true"
+            [filter]="true" filterMatchMode="in" [style]="{'overflow':'visible'}">
+    <template pTemplate="filter" let-col>
+      <p-multiSelect [options]="extentions" defaultLabel="All"
+                     (onChange)="dt.filter($event.value, col.field, col.filterMatchMode)"
+                     styleClass="ui-column-filter">
+      </p-multiSelect>
+    </template>
+  </p-column>
+
+  <p-column styleClass="col-button" header="Download">
+    <template let-file="rowData" pTemplate="body">
+      <a pButton type="button" icon="fa fa-download"
+         href="{{file?._links?.download?.href}}" download>
+      </a>
+    </template>
+  </p-column>
+</p-dataTable>
