@@ -1,0 +1,22 @@
+{
+  "id": "58dacd00b179a449e07b8b0f",
+  "fileName": "my-photo.jpg",
+  "contentType": "image/jpg",
+  "metadata": {
+    "uploadDate": "2016-01-03T06:23:49.768Z",
+    "comments": [
+      {
+        "id": "58e9f7c2fde4762e702c555b",
+        "text": "Family photo.",
+        "creationDate": "2016-01-03T06:23:49.768Z",
+        "updateDate": "2016-01-03T06:23:49.768Z"
+      },
+      {
+        "id": "58ea0451fde4762e702c5571",
+        "text": "Very nice photo.",
+        "creationDate": "2016-01-03T06:25:34.768Z",
+        "updateDate": "2016-01-03T06:28:12.768Z"
+      }
+    ]
+  }
+}

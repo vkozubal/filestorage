@@ -1,0 +1,16 @@
+<p-dialog header="Upload To File Storage" modal="true" width="640" [(visible)]="display">
+
+  <fs-file-upload></fs-file-upload>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="button" pButton icon="fa-check" (click)="display=false" label="Done"></button>
+    </div>
+  </p-footer>
+</p-dialog>
+
+<button type="text"
+        (click)="showDialog()"
+        pButton icon="fa fa-upload"
+        label="Upload files"></button>
+
+<fs-files-table></fs-files-table>

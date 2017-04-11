@@ -1,0 +1,103 @@
+[
+  {
+    "id": "58dacb0ab179a447a0dcef9d3",
+    "fileName": "testupload.txt",
+    "contentType": "text/plain",
+    "metadata": {
+      "uploadDate": "2017-04-08T15:27:49.768Z",
+      "comments": [
+        {
+          "id": "58e7420776e0e915d07783c5",
+          "text": "First comment",
+          "creationDate": "2017-05-02T17:15:49.768Z"
+        },
+        {
+          "id": "58e742a576e0e915d07783c7",
+          "text": "This comment was updated on May 5 2017 22:37.",
+          "updateDate": "2017-05-02T27:15:49.768Z",
+          "creationDate": "2017-05-05T22:37:49.768Z"
+        }
+      ]
+    },
+    "_links": {
+      "download": {
+        "href": "/api/files/58dacb0ab179a447a0dcef9d3"
+      }
+    }
+  },
+  {
+    "id": "58dacb4cb179a447f56c9856",
+    "fileName": "testupload.pdf",
+    "contentType": "application/pdf",
+    "metadata": {
+      "uploadDate": "2017-03-17T20:19:49.768Z",
+      "comments": []
+    },
+    "_links": {
+      "download": {
+        "href": "/api/files/58dacb4cb179a447f56c9856"
+      }
+    }
+  },
+  {
+    "id": "58dacb69b179a447f56c9858",
+    "fileName": "testupload.xlsx",
+    "contentType": "application/xls",
+    "metadata": {
+      "uploadDate": "2017-02-18T22:54:49.768Z",
+      "comments": []
+    },
+    "_links": {
+      "download": {
+        "href": "/api/files/58dacb69b179a447f56c9858"
+      }
+    }
+  },
+  {
+    "id": "58dacd00b179a449e07b8b0f",
+    "fileName": "my-photo.jpg",
+    "contentType": "image/jpg",
+    "metadata": {
+      "uploadDate": "2016-01-03T06:23:49.768Z",
+      "comments": [
+        {
+          "id": "58e9f7c2fde4762e702c555b",
+          "text": "Family photo",
+          "creationDate": "2016-01-03T06:23:49.768Z",
+          "updateDate": "2016-01-03T06:23:49.768Z"
+        },
+        {
+          "id": "58ea0451fde4762e702c5571",
+          "text": "Very nice photo.",
+          "creationDate": "2016-01-03T06:25:34.768Z",
+          "updateDate": "2016-01-03T06:28:12.768Z"
+        }
+      ]
+    },
+    "_links": {
+      "download": {
+        "href": "/api/files/58dacd00b179a449e07b8b0f"
+      }
+    }
+  },
+  {
+    "id": "58dacee0b179a44c22855c21",
+    "fileName": ".txt",
+    "contentType": "text/plain",
+    "metadata": {
+      "uploadDate": "2017-05-31T17:27:49.768Z",
+      "comments": [
+        {
+          "id": "58db5426b179a4562c608be1",
+          "text": "This is single comment.",
+          "creationDate": "2017-06-01T07:27:49.768Z"
+        }
+      ]
+    },
+    "_links": {
+      "download": {
+        "href": "/api/files/58dacee0b179a44c22855c21"
+      }
+    }
+  }
+]
