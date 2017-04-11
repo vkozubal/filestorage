@@ -1,6 +1,5 @@
 package kozv.fs.api.model;
 
-
 import lombok.Data;
 
 import java.io.InputStream;

@@ -3,9 +3,11 @@ package kozv.fs.rest.controller;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
 import kozv.fs.api.service.IFileStorageService;
-import kozv.fs.api.service.exception.PersistentFileNotFoundException;
+import kozv.fs.api.service.exception.FSServiceException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,11 +18,15 @@ import java.io.IOException;
 import java.util.Collection;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
+@Slf4j
 @Controller
 @RequestMapping("/api/files")
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
+@EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
 public class FileController {
     private static final String ATTACHMENT_FILENAME = "attachment; filename=\"%s\"";
 
@@ -35,40 +41,61 @@ public class FileController {
     @GetMapping("/{fileId}/attributes")
     @ResponseBody
     public FileAttributes findOne(@PathVariable String fileId) {
-        return fileStorageService.findOne(fileId).getFileAttrs();
+        final FileAttributes fileAttrs = fileStorageService.findOne(fileId).getFileAttrs();
+        addHateoasLinks(fileAttrs);
+        return fileAttrs;
     }
 
     @GetMapping("/{fileId}")
-    public ResponseEntity<byte[]> serveFile(@PathVariable String fileId) throws IOException {
+    public ResponseEntity<byte[]> serveFile(@PathVariable String fileId) {
         DataFile file = fileStorageService.findOne(fileId);
-        return ResponseEntity
-                .ok()
-                .header(CONTENT_DISPOSITION, getAttachmentHeader(file.getFileAttrs()))
-                .body(toByteArray(file.getData()));
+        try {
+            return ResponseEntity
+                    .ok()
+                    .header(CONTENT_DISPOSITION, getAttachmentHeader(file.getFileAttrs()))
+                    .body(toByteArray(file.getData()));
+        } catch (IOException e) {
+            e.printStackTrace();// todo
+            throw new RuntimeException();
+        }
     }
 
     @PostMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public FileAttributes saveFile(@RequestParam("file") MultipartFile file/*, @RequestParam("metadata") GridFileMetadata metadata*/) throws IOException {
+    public FileAttributes saveFile(@RequestParam("file") MultipartFile file) {
         FileAttributes fileAttrs = new FileAttributes();
         fileAttrs.setContentType(file.getContentType());
         fileAttrs.setFileName(file.getOriginalFilename());
 
-        return fileStorageService.save(createDataFile(file, fileAttrs));
+        final FileAttributes fileAtteibutes = fileStorageService.save(createDataFile(file, fileAttrs));
+
+        addHateoasLinks(fileAtteibutes);
+        return fileAtteibutes;
     }
 
-    @ExceptionHandler(PersistentFileNotFoundException.class)
-    public ResponseEntity handleStorageFileNotFound(PersistentFileNotFoundException e) {
+    private void addHateoasLinks(FileAttributes fileAtteibutes) {
+        final String fileId = fileAtteibutes.getFileId();
+        fileAtteibutes.add(linkTo(methodOn(getClass()).findOne(fileId)).withSelfRel());
+        fileAtteibutes.add(linkTo(methodOn(getClass()).serveFile(fileId)).withRel("download"));
+        fileAtteibutes.add(linkTo(methodOn(CommentsController.class).getComments(fileId)).withRel("comments"));
+    }
+
+    @ExceptionHandler(FSServiceException.class)
+    public ResponseEntity handleStorageFileNotFound(FSServiceException e) {
+        log.error(e.getMessage(), e);
         return ResponseEntity.notFound().build();
     }
 
-
-    private DataFile createDataFile(@RequestParam("file") MultipartFile file, FileAttributes fileAttrs) throws IOException {
-        DataFile dataFile = new DataFile();
-        dataFile.setData(file.getInputStream());
-        dataFile.setFileAttrs(fileAttrs);
-        return dataFile;
+    private DataFile createDataFile(MultipartFile file, FileAttributes fileAttrs) {
+        try {
+            DataFile dataFile = new DataFile();
+            dataFile.setData(file.getInputStream());
+            dataFile.setFileAttrs(fileAttrs);
+            return dataFile;
+        } catch (IOException e) {
+            throw new RuntimeException();// todo
+        }
     }
 
     private static String getAttachmentHeader(FileAttributes fileAttrs) {

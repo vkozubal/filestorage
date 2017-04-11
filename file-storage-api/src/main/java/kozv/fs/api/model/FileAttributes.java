@@ -1,15 +1,19 @@
 package kozv.fs.api.model;
 
 import lombok.Data;
-import org.springframework.hateoas.Identifiable;
+import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.ResourceSupport;
+
+import java.util.Date;
 
 /**
  * Contains all file attributes.
  */
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class FileAttributes implements Identifiable<String> {
-    private String id;
+public class FileAttributes extends ResourceSupport {
+    private String fileId;
     private String fileName;
     private String contentType;
-    private GridFileMetadata metadata;
+    private Date uploadDate;
 }

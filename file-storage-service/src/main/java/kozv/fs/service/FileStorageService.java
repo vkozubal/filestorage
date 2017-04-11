@@ -1,11 +1,10 @@
 package kozv.fs.service;
 
 import com.mongodb.gridfs.GridFSDBFile;
-import kozv.fs.api.service.exception.PersistentFileNotFoundException;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
-import kozv.fs.api.model.GridFileMetadata;
 import kozv.fs.api.service.IFileStorageService;
+import kozv.fs.api.service.exception.PersistentFileNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,9 @@ public class FileStorageService implements IFileStorageService {
     private static final Function<GridFSDBFile, FileAttributes> GRID_FSDB_TO_FILE_ATTRIBUTES = gridFSDBFile -> {
         FileAttributes attrs = new FileAttributes();
         attrs.setFileName(gridFSDBFile.getFilename());
-        attrs.setId(gridFSDBFile.getId().toString());
+        attrs.setFileId(gridFSDBFile.getId().toString());
         attrs.setContentType(gridFSDBFile.getContentType());
-        attrs.setMetadata((GridFileMetadata) gridFSDBFile.getMetaData());
+        attrs.setUploadDate(gridFSDBFile.getUploadDate());
         return attrs;
     };
 
@@ -42,24 +41,18 @@ public class FileStorageService implements IFileStorageService {
         // store the entity to the database and get an id
         String newId = gridFsOperations
                 .store(file.getData(), attrs.getFileName(),
-                        attrs.getContentType(), attrs.getMetadata())
+                        attrs.getContentType())
                 .getId()
                 .toString();
 
         // update id in the given entity
-        attrs.setId(newId);
+        attrs.setFileId(newId);
         return file.getFileAttrs();
     }
 
     @Override
     public DataFile findOne(String id) {
-        Query query = new Query(Criteria.where("_id").is(id));
-        GridFSDBFile result = gridFsOperations.findOne(query);
-
-        if (result == null) {
-            log.debug("File identified by {} not found in the storage.", id);
-            throw new PersistentFileNotFoundException();
-        }
+        GridFSDBFile result = findOneById(id);
         DataFile file = new DataFile();
         file.setFileAttrs(GRID_FSDB_TO_FILE_ATTRIBUTES.apply(result));
         file.setData(result.getInputStream());
@@ -73,5 +66,17 @@ public class FileStorageService implements IFileStorageService {
                 .parallelStream()
                 .map(GRID_FSDB_TO_FILE_ATTRIBUTES)
                 .collect(Collectors.toList());
+    }
+    private GridFSDBFile findOneById(String id) {
+        final GridFSDBFile persistedFile = gridFsOperations.findOne(getByIdQuery(id));
+        if (persistedFile == null) {
+            final String message = String.format("File identified by %s not found in the storage.", id);
+            throw new PersistentFileNotFoundException(message);
+        }
+        return persistedFile;
+    }
+
+    private Query getByIdQuery(String id) {
+        return new Query(Criteria.where("_id").is(id));
     }
 }

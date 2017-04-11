@@ -19,7 +19,7 @@ public interface IFileStorageService {
      * @param id id must not be {@literal null}.
      * @return an {@link FileAttributes} by its id, or {@literal null} if none found
      */
-    DataFile findOne(String id) ;
+    DataFile findOne(String id);
 
     /**
      * @return all user files
