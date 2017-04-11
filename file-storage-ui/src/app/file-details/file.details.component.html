@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-sm-7">
+    {{file?.fileName}}
+  </div>
+  <div class="col-sm-3">
+    Created on {{ file?.metadata?.uploadDate | date }}
+  </div>
+  <div class="col-sm-2">
+
+    <a class="btn btn-primary btn-sm"
+       href="{{file?._links?.download?.href}}" download>
+      Download
+    </a>
+  </div>
+</div>
+<div class="file-view-container">
+  <div class="row">
+    <div class="col-sm-8">
+      <pre>
+        {{ file?.metadata?.comments | json }}
+      </pre>
+
+    </div>
+    <div class="col-sm-4">
+      <div class="comments">
+        Comments:
+        <fs-editable-comment (onUpdate)="createMessage($event)"
+                             (onDelete)="resetComment()"
+                             [value]="comment">
+        </fs-editable-comment>
+
+        <div *ngFor="let item of file?.metadata?.comments">
+          <fs-editable-comment (onUpdate)="updateMessage($event)"
+                               (onDelete)="deleteMessage(item)"
+                               [value]="item">
+          </fs-editable-comment>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

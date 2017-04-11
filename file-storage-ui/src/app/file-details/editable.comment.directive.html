@@ -1,0 +1,23 @@
+<div class="comment-field">
+  <div class="comment-box">
+
+    <div aria-label="Write a comment"
+         [(contenteditableModel)]="comment.text"
+         placeholder="Write a comment"
+         aria-multiline="true"
+         class="text-edit-input"
+         contenteditable="true"
+         role="textbox">
+      </div>
+
+      <!--<div *ngIf="!comment?.text?.length" class="comment-bottom-bar">
+        <a class="edit-button">Edit...</a>
+      </div>-->
+
+    <div *ngIf="comment?.text?.length" class="post-area">
+      <button class="button-as-link" (click)="update()">Post</button>
+      <span> • </span>
+      <button class="button-as-link" (click)="cancel()">Cancel</button>
+    </div>
+  </div>
+</div>
