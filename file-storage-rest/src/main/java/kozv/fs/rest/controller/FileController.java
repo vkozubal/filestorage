@@ -53,7 +53,7 @@ public class FileController {
             return ResponseEntity
                     .ok()
                     .header(CONTENT_DISPOSITION, getAttachmentHeader(file.getFileAttrs()))
-                    .body(toByteArray(file.getData()));
+                    .body(toByteArray(file.getDataStream()));
         } catch (IOException e) {
             e.printStackTrace();// todo
             throw new RuntimeException();
@@ -90,7 +90,7 @@ public class FileController {
     private DataFile createDataFile(MultipartFile file, FileAttributes fileAttrs) {
         try {
             DataFile dataFile = new DataFile();
-            dataFile.setData(file.getInputStream());
+            dataFile.setDataStream(file.getInputStream());
             dataFile.setFileAttrs(fileAttrs);
             return dataFile;
         } catch (IOException e) {

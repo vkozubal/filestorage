@@ -1,14 +1,15 @@
 package kozv.fs.api.service;
 
 import kozv.fs.api.model.FileComment;
-import kozv.fs.api.model.GridFileComments;
+
+import java.util.Collection;
 
 public interface ICommentsService {
 
     /**
      * @param fileId unique file identification
      */
-    GridFileComments getComments(String fileId);
+    Collection<FileComment> getComments(String fileId);
 
 
     /**

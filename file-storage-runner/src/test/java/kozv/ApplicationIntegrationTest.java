@@ -38,7 +38,6 @@ public class ApplicationIntegrationTest {
 
     @Test
     public void getFiles() {
-
         ClassPathResource resource = new ClassPathResource("test-upload.txt", getClass());
         MultiValueMap<String, Object> map = createMultipartRequest(resource);
         ResponseEntity<DataFile> fileAttributesEntity = restTemplate.postForEntity("/api/files", map, DataFile.class);

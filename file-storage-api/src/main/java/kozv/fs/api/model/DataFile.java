@@ -6,6 +6,13 @@ import java.io.InputStream;
 
 @Data
 public class DataFile {
-    private InputStream data;
+    /**
+     * Contains an InputStream from which data can be read.
+     */
+    private InputStream dataStream;
+
+    /**
+     * File attributes
+     */
     private FileAttributes fileAttrs;
 }

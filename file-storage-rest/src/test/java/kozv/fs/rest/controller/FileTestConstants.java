@@ -23,7 +23,7 @@ class FileTestConstants {
     static {
         DATA_FILE = new DataFile();
         final InputStream resourceAsStream = FileTestConstants.class.getResourceAsStream(FILE_NAME);
-        DATA_FILE.setData(resourceAsStream);
+        DATA_FILE.setDataStream(resourceAsStream);
         DATA_FILE.setFileAttrs(new FileAttributes());
         DATA_FILE.getFileAttrs().setFileId(FILE_ID);
         DATA_FILE.getFileAttrs().setFileName(FILE_NAME);

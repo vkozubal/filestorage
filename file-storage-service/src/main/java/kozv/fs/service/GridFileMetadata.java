@@ -1,16 +1,16 @@
-package kozv.fs.api.model;
+package kozv.fs.service;
 
+import kozv.fs.api.model.FileComment;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.hateoas.ResourceSupport;
 
 import java.util.Collection;
 
 /**
- * Wrapper for file comments.
+ * Wraps all file Metadata
  */
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class GridFileComments extends ResourceSupport {
+public class GridFileMetadata {
     private Collection<FileComment> comments;
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Setter
 @Component
+@Profile("prod")
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class FileStorageMongoConfiguration extends AbstractMongoConfiguration {
 

@@ -1,7 +1,6 @@
 package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.FileComment;
-import kozv.fs.api.model.GridFileComments;
 import kozv.fs.api.service.ICommentsService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,8 @@ public class CommentsController {
 
     @GetMapping
     @ResponseBody
-    public GridFileComments getComments(@PathVariable String fileId) {
-        return commentsService.getComments(fileId);
+    public CommentsResponse getComments(@PathVariable String fileId) {
+        return new CommentsResponse(commentsService.getComments(fileId));
     }
 
     @PostMapping

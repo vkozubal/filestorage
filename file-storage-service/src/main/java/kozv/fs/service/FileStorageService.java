@@ -1,6 +1,7 @@
 package kozv.fs.service;
 
 import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSFile;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
 import kozv.fs.api.service.IFileStorageService;
@@ -39,14 +40,13 @@ public class FileStorageService implements IFileStorageService {
     public FileAttributes save(DataFile file) {
         FileAttributes attrs = file.getFileAttrs();
         // store the entity to the database and get an id
-        String newId = gridFsOperations
-                .store(file.getData(), attrs.getFileName(),
-                        attrs.getContentType())
-                .getId()
-                .toString();
+        GridFSFile newFile = gridFsOperations
+                .store(file.getDataStream(), attrs.getFileName(),
+                        attrs.getContentType());
 
         // update id in the given entity
-        attrs.setFileId(newId);
+        attrs.setFileId(newFile.getId().toString());
+        attrs.setUploadDate(newFile.getUploadDate());
         return file.getFileAttrs();
     }
 
@@ -55,7 +55,7 @@ public class FileStorageService implements IFileStorageService {
         GridFSDBFile result = findOneById(id);
         DataFile file = new DataFile();
         file.setFileAttrs(GRID_FSDB_TO_FILE_ATTRIBUTES.apply(result));
-        file.setData(result.getInputStream());
+        file.setDataStream(result.getInputStream());
         return file;
     }
 
@@ -67,6 +67,7 @@ public class FileStorageService implements IFileStorageService {
                 .map(GRID_FSDB_TO_FILE_ATTRIBUTES)
                 .collect(Collectors.toList());
     }
+
     private GridFSDBFile findOneById(String id) {
         final GridFSDBFile persistedFile = gridFsOperations.findOne(getByIdQuery(id));
         if (persistedFile == null) {
