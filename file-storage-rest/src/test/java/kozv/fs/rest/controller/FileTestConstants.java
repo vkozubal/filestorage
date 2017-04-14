@@ -39,14 +39,14 @@ class FileTestConstants {
         return createMultipartRequest(resource);
     }
 
-    static void assertFileAttributes(FileAttributes fileAttrs) {
-        assertThat(fileAttrs.getFileName()).isEqualTo(FILE_NAME);
-        assertThat(fileAttrs.getContentType()).isEqualTo(TEXT_PLAIN_CONTENT_TYPE);
-    }
-
     static MultiValueMap<String, Object> createMultipartRequest(ClassPathResource resource) {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.add("file", resource);
         return map;
+    }
+
+    static void assertFileAttributes(FileAttributes fileAttrs) {
+        assertThat(fileAttrs.getFileName()).isEqualTo(FILE_NAME);
+        assertThat(fileAttrs.getContentType()).isEqualTo(TEXT_PLAIN_CONTENT_TYPE);
     }
 }

@@ -68,23 +68,22 @@ public class FileController {
         fileAttrs.setContentType(file.getContentType());
         fileAttrs.setFileName(file.getOriginalFilename());
 
-        final FileAttributes fileAtteibutes = fileStorageService.save(createDataFile(file, fileAttrs));
+        final FileAttributes SavedFileAttributes = fileStorageService.save(createDataFile(file, fileAttrs));
 
-        addHateoasLinks(fileAtteibutes);
-        return fileAtteibutes;
-    }
-
-    private void addHateoasLinks(FileAttributes fileAtteibutes) {
-        final String fileId = fileAtteibutes.getFileId();
-        fileAtteibutes.add(linkTo(methodOn(getClass()).findOne(fileId)).withSelfRel());
-        fileAtteibutes.add(linkTo(methodOn(getClass()).serveFile(fileId)).withRel("download"));
-        fileAtteibutes.add(linkTo(methodOn(CommentsController.class).getComments(fileId)).withRel("comments"));
+        addHateoasLinks(SavedFileAttributes);
+        return SavedFileAttributes;
     }
 
     @ExceptionHandler(FSServiceException.class)
     public ResponseEntity handleStorageFileNotFound(FSServiceException e) {
-        log.error(e.getMessage(), e);
         return ResponseEntity.notFound().build();
+    }
+
+    private void addHateoasLinks(FileAttributes fileAttributes) {
+        final String fileId = fileAttributes.getFileId();
+        fileAttributes.add(linkTo(methodOn(getClass()).findOne(fileId)).withSelfRel());
+        fileAttributes.add(linkTo(methodOn(getClass()).serveFile(fileId)).withRel("download"));
+        fileAttributes.add(linkTo(methodOn(CommentsController.class).getComments(fileId)).withRel("comments"));
     }
 
     private DataFile createDataFile(MultipartFile file, FileAttributes fileAttrs) {

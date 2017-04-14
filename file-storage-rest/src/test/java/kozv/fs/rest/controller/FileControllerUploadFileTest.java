@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,8 +43,7 @@ public class FileControllerUploadFileTest {
 
     @Test
     public void shouldSaveFile() {
-        when(fileStorageService.save(any(DataFile.class)))
-                .thenAnswer(invocationOnMock -> ((DataFile) invocationOnMock.getArguments()[0]).getFileAttrs());
+        setupMock();
 
         ResponseEntity<FileAttributes> fileAttributesEntity =
                 restTemplate.postForEntity(ALL_FILES_URL, createPostRequest(), FileAttributes.class);
@@ -98,19 +98,6 @@ public class FileControllerUploadFileTest {
         ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FileTestConstants.FILE_ID);
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
     }
-/*
-
-    @Test
-    public void shouldUploadBigFiles(){
-        final MultiValueMap<String, Object> postRequest = createPostRequest("big-file.zip");
-
-        ResponseEntity<FileAttributes> fileAttributesEntity =
-                restTemplate.postForEntity(ALL_FILES_URL, postRequest, FileAttributes.class);
-
-        then(fileStorageService).should().save(any(DataFile.class));
-        assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
-    }
-*/
 
     private void assertFileLinks(FileAttributes fileAttrs) {
         final Link selfLink = fileAttrs.getLink(Link.REL_SELF);
@@ -123,4 +110,19 @@ public class FileControllerUploadFileTest {
         assertThat(commentsLink.getHref()).endsWith("/api/files/{fileId}/comments");
     }
 
+    @Test
+    public void shouldHandleBigFile() {
+        setupMock();
+        final MultiValueMap<String, Object> postRequest = createPostRequest("big-file.zip");
+
+        ResponseEntity<FileAttributes> responseEntity = restTemplate.postForEntity(
+                ALL_FILES_URL, postRequest, FileAttributes.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+    }
+
+    private void setupMock() {
+        when(fileStorageService.save(any(DataFile.class)))
+                .thenAnswer(invocationOnMock -> ((DataFile) invocationOnMock.getArguments()[0]).getFileAttrs());
+    }
 }
