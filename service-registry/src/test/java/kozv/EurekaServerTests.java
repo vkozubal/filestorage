@@ -14,7 +14,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EurekaServiceApplicationTests {
+public class EurekaServerTests {
 
     @LocalServerPort
     private int port;

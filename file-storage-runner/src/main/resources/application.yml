@@ -1,6 +1,2 @@
 server:
     port: 8090
-
-spring:
-    resources:
-        static-locations: classpath:/META-INF/resources/webjars/file-storage-ui/1.0.0/
