@@ -75,7 +75,7 @@ public class FileController {
     }
 
     @ExceptionHandler(FSServiceException.class)
-    public ResponseEntity handleStorageFileNotFound(FSServiceException e) {
+    public ResponseEntity handleNotFound(FSServiceException e) {
         return ResponseEntity.notFound().build();
     }
 

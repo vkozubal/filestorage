@@ -1,9 +1,11 @@
 package kozv.fs.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -21,30 +23,20 @@ import java.util.Date;
  * This class is responsible for cleaning the old / expired files.
  */
 @Slf4j
-@Profile("!test")
 @Component
 @EnableScheduling
+@AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class ScheduledOutdatedFilesCleaner {
     static final String CRON_SCHEDULING_EXPRESSION = "0 0 0 * * ?";
 
-    /**
-     * @see <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">format</a>
-     */
-    @Value("${fs.file.expiration.period}")
-    private String fileExpirationPeriodVal;
-
     private final GridFsOperations gridFsOperations;
+    private final FileCleanupProperties cleanupProperties;
 
-    @Autowired
-    public ScheduledOutdatedFilesCleaner(GridFsOperations gridFsOperations) {
-        this.gridFsOperations = gridFsOperations;
-    }
-
-    @Scheduled(cron = CRON_SCHEDULING_EXPRESSION, initialDelay = 1000)
+    @Scheduled(cron = CRON_SCHEDULING_EXPRESSION)
     public void cleanOutdatedFiles() throws ParseException {
         log.info("Outdated files cleanup was triggered.");
 
-        final Date dateThreshold = getDate(fileExpirationPeriodVal);
+        final Date dateThreshold = getDate(cleanupProperties.getFileExpirationPeriodVal());
 
         final Query deleteQuery = new Query(Criteria.where("uploadDate").lte(dateThreshold));
         gridFsOperations.delete(deleteQuery);

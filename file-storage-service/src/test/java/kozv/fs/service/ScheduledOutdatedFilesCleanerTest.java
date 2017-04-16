@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -31,17 +30,17 @@ public class ScheduledOutdatedFilesCleanerTest {
     private ScheduledOutdatedFilesCleaner cleaner;
     @Mock
     private GridFsOperations gridFsOperationsMock;
+    private FileCleanupProperties cleanupProperties;
 
     @Before
     public void setup() {
-        cleaner = new ScheduledOutdatedFilesCleaner(gridFsOperationsMock);
+        cleanupProperties = new FileCleanupProperties();
+        cleaner = new ScheduledOutdatedFilesCleaner(gridFsOperationsMock, cleanupProperties);
     }
 
     @Test
     public void shouldMakeAQueryToDB() throws Exception {
-        ReflectionTestUtils.setField(cleaner,
-                "fileExpirationPeriodVal", "P2D");
-
+        cleanupProperties.setFileExpirationPeriodVal("P2D");
         cleaner.cleanOutdatedFiles();
         verify(gridFsOperationsMock).delete(captor.capture());
 
