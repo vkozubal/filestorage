@@ -1,0 +1,5 @@
+fs:
+  file:
+    expiration:
+      # https://en.wikipedia.org/wiki/ISO_8601#Durations
+      period: "P2D"
