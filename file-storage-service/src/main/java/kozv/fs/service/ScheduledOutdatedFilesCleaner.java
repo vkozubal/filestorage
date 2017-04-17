@@ -3,9 +3,6 @@ package kozv.fs.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -36,7 +33,8 @@ public class ScheduledOutdatedFilesCleaner {
     public void cleanOutdatedFiles() throws ParseException {
         log.info("Outdated files cleanup was triggered.");
 
-        final Date dateThreshold = getDate(cleanupProperties.getFileExpirationPeriodVal());
+        final long duration = getDuration(cleanupProperties.getFileExpirationPeriodVal());
+        final Date dateThreshold = getDate(duration);
 
         final Query deleteQuery = new Query(Criteria.where("uploadDate").lte(dateThreshold));
         gridFsOperations.delete(deleteQuery);
@@ -44,9 +42,11 @@ public class ScheduledOutdatedFilesCleaner {
         log.info("Cleanup of outdated files is done.");
     }
 
-    Date getDate(String fileExpirationPeriodVal) throws ParseException {
-        final long duration = Duration.parse(fileExpirationPeriodVal).toMillis();
+    long getDuration(String fileExpirationPeriodVal) throws ParseException {
+        return Duration.parse(fileExpirationPeriodVal).toMillis();
+    }
 
+    private Date getDate(long duration) {
         ZoneId zoneId = ZoneId.systemDefault();
         long epoch = LocalDate.now().atStartOfDay(zoneId).toInstant().toEpochMilli();
 

@@ -54,8 +54,8 @@ public class ScheduledOutdatedFilesCleanerTest {
 
     @Test
     public void shouldRespectISO_8601() throws ParseException {
-        final long actualTime = cleaner.getDate("PT1H30M").getTime();
-        assertThat(actualTime).isEqualTo(1492284600000L);
+        final long duration = cleaner.getDuration("PT1H30M");
+        assertThat(duration).isEqualTo(5400000);
     }
 
     @Test
