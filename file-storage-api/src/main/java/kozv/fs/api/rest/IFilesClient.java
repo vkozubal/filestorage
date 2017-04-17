@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Describes the restful api for {@link FileAttributes}
  */
+@RequestMapping(value = "/api/files", produces = "application/hal+json")
 public interface IFilesClient {
     @GetMapping
     @ResponseBody

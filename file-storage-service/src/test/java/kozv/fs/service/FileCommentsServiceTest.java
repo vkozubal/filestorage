@@ -44,6 +44,11 @@ public class FileCommentsServiceTest {
     }
 
     @Test
+    public void shouldNotFailIfMetadataIsAbsent(){
+        assertThat(commentsService.getComments(fileId)).isEmpty();
+    }
+
+    @Test
     public void storedAndRetrievedCommentShouldBeTheSame() {
         final Date beforeSaveDate = new Date();
         final FileComment createdComment = createComment();

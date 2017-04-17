@@ -24,7 +24,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @Slf4j
 @Controller
-@RequestMapping("/api/files")
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
 public class FileController implements IFilesClient {

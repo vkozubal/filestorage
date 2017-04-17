@@ -16,10 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -30,8 +27,11 @@ public class FileCommentsService implements ICommentsService {
 
     @Override
     public Collection<FileComment> getComments(String id) {
-        final GridFSDBFile oneById = findById(id);
-        return fromDBObject(oneById.getMetaData()).getComments();
+        final DBObject metaData = findById(id).getMetaData();
+        if (metaData == null) {
+            return Collections.emptyList();
+        }
+        return fromDBObject(metaData).getComments();
     }
 
     @Override

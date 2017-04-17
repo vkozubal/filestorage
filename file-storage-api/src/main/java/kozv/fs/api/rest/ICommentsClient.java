@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Describes the restful api for {@link FileComment}
  */
-@RequestMapping("/api/files/{fileId}/comments")
+@RequestMapping(value = "/api/files/{fileId}/comments", produces = "application/hal+json")
 public interface ICommentsClient {
     @GetMapping
     @ResponseBody
@@ -22,8 +22,8 @@ public interface ICommentsClient {
     @DeleteMapping("/{commentId}")
     void deleteComment(@PathVariable String fileId, @PathVariable String commentId);
 
-    @GetMapping("/{commentId}")
     @ResponseBody
+    @GetMapping("/{commentId}")
     FileComment getComment(@PathVariable String fileId, @PathVariable String commentId);
 
     @PutMapping("/{commentId}")
