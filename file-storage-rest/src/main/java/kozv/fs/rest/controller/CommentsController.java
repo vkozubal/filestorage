@@ -1,53 +1,51 @@
 package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.FileComment;
+import kozv.fs.api.rest.ICommentsClient;
 import kozv.fs.api.service.ICommentsService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Controller
-@RequestMapping("/api/files/{fileId}/comments")
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
-public class CommentsController {
+public class CommentsController implements ICommentsClient {
 
     private final ICommentsService commentsService;
 
-    @GetMapping
-    @ResponseBody
-    public CommentsResponse getComments(@PathVariable String fileId) {
-        return new CommentsResponse(commentsService.getComments(fileId));
+    @Override
+    public Resources<FileComment> getComments(@PathVariable String fileId) {
+        return new Resources<>(commentsService.getComments(fileId));
     }
 
-    @PostMapping
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
+    @Override
     public FileComment createComment(@PathVariable String fileId, @RequestBody FileComment comment) {
         final FileComment entity = commentsService.createComment(fileId, comment);
         entity.add(linkTo(methodOn(getClass()).getComment(fileId, entity.getCommentId())).withSelfRel());
         return entity;
     }
 
-    @DeleteMapping("/{commentId}")
+    @Override
     public void deleteComment(@PathVariable String fileId, @PathVariable String commentId) {
         commentsService.deleteComment(fileId, commentId);
     }
 
-    @GetMapping("/{commentId}")
+    @Override
     public FileComment getComment(@PathVariable String fileId, @PathVariable String commentId) {
         return commentsService.getComment(fileId, commentId);
     }
 
-    @PutMapping("/{commentId}")
-    @ResponseBody
-    public FileComment updateComment(@PathVariable String commentId, @PathVariable String fileId, FileComment comment) {
+    @Override
+    public FileComment updateComment(@PathVariable String commentId, @PathVariable String fileId,
+                                     @RequestBody FileComment comment) {
         comment.setCommentId(commentId);
         return commentsService.updateComment(fileId, comment);
     }

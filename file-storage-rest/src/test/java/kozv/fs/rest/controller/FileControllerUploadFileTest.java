@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -83,11 +84,11 @@ public class FileControllerUploadFileTest {
     public void shouldFindAllFilesAttributes() {
         when(fileStorageService.findAll()).thenReturn(Collections.singletonList(FileTestConstants.DATA_FILE.getFileAttrs()));
 
-        ResponseEntity<Collection<FileAttributes>> fileAttributesEntity = restTemplate.exchange(ALL_FILES_URL, HttpMethod.GET,
-                null, new ParameterizedTypeReference<Collection<FileAttributes>>() {
+        ResponseEntity<Resources<FileAttributes>> fileAttributesEntity = restTemplate.exchange(ALL_FILES_URL, HttpMethod.GET,
+                null, new ParameterizedTypeReference<Resources<FileAttributes>>() {
                 });
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-        Collection<FileAttributes> fileAttributesList = fileAttributesEntity.getBody();
+        Collection<FileAttributes> fileAttributesList = fileAttributesEntity.getBody().getContent();
         assertThat(fileAttributesList.size()).isEqualTo(1);
         assertFileAttributes(fileAttributesList.iterator().next());
     }
@@ -99,17 +100,6 @@ public class FileControllerUploadFileTest {
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
     }
 
-    private void assertFileLinks(FileAttributes fileAttrs) {
-        final Link selfLink = fileAttrs.getLink(Link.REL_SELF);
-        assertThat(selfLink.getHref()).endsWith("/api/files/{fileId}/attributes");
-
-        final Link downloadLink = fileAttrs.getLink("download");
-        assertThat(downloadLink.getHref()).endsWith("/api/files/{fileId}");
-
-        final Link commentsLink = fileAttrs.getLink("comments");
-        assertThat(commentsLink.getHref()).endsWith("/api/files/{fileId}/comments");
-    }
-
     @Test
     public void shouldHandleBigFile() {
         setupMock();
@@ -119,6 +109,17 @@ public class FileControllerUploadFileTest {
                 ALL_FILES_URL, postRequest, FileAttributes.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+    }
+
+    private void assertFileLinks(FileAttributes fileAttrs) {
+        final Link selfLink = fileAttrs.getLink(Link.REL_SELF);
+        assertThat(selfLink.getHref()).endsWith("/api/files/{fileId}/attributes");
+
+        final Link downloadLink = fileAttrs.getLink("download");
+        assertThat(downloadLink.getHref()).endsWith("/api/files/{fileId}");
+
+        final Link commentsLink = fileAttrs.getLink("comments");
+        assertThat(commentsLink.getHref()).endsWith("/api/files/{fileId}/comments");
     }
 
     private void setupMock() {

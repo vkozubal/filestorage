@@ -2,20 +2,20 @@ package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
+import kozv.fs.api.rest.IFilesClient;
 import kozv.fs.api.service.IFileStorageService;
 import kozv.fs.api.service.exception.FSServiceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -27,26 +27,24 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @RequestMapping("/api/files")
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
-public class FileController {
+public class FileController implements IFilesClient {
     private static final String ATTACHMENT_FILENAME = "attachment; filename=\"%s\"";
 
     private final IFileStorageService fileStorageService;
 
-    @GetMapping
-    @ResponseBody
-    public Collection<FileAttributes> findAll() {
-        return fileStorageService.findAll();
+    @Override
+    public Resources<FileAttributes> findAll() {
+        return new Resources<>(fileStorageService.findAll());
     }
 
-    @GetMapping("/{fileId}/attributes")
-    @ResponseBody
+    @Override
     public FileAttributes findOne(@PathVariable String fileId) {
         final FileAttributes fileAttrs = fileStorageService.findOne(fileId).getFileAttrs();
         addHateoasLinks(fileAttrs);
         return fileAttrs;
     }
 
-    @GetMapping("/{fileId}")
+    @Override
     public ResponseEntity<byte[]> serveFile(@PathVariable String fileId) {
         DataFile file = fileStorageService.findOne(fileId);
         try {
@@ -60,9 +58,7 @@ public class FileController {
         }
     }
 
-    @PostMapping
-    @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
+    @Override
     public FileAttributes saveFile(@RequestParam("file") MultipartFile file) {
         FileAttributes fileAttrs = new FileAttributes();
         fileAttrs.setContentType(file.getContentType());
