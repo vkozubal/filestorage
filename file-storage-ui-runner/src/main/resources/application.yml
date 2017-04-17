@@ -2,8 +2,22 @@ zuul:
     routes:
         files:
             path: /api/**
-            url: http://localhost:8090/api
+            serviceId: fs-service
+            stripPrefix: false
 
 spring:
     resources:
         static-locations: classpath:/META-INF/resources/webjars/file-storage-ui/1.0.0/
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${vcap.services.eureka-service.credentials.uri:http://127.0.0.1:8761}/eureka/
+
+---
+spring:
+  profiles: cloud
+eureka:
+  instance:
+    hostname: ${APPLICATION_DOMAIN}
+    nonSecurePort: 80
