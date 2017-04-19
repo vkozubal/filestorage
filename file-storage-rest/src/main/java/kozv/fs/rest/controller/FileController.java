@@ -8,6 +8,8 @@ import kozv.fs.service.exception.FSServiceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -49,17 +50,13 @@ public class FileController implements IFilesClient {
     }
 
     @Override
-    public ResponseEntity<byte[]> serveFile(@PathVariable String fileId) {
+    public ResponseEntity<Resource> serveFile(@PathVariable String fileId) {
         DataFile file = fileStorageService.findOne(fileId);
-        try {
-            return ResponseEntity
-                    .ok()
-                    .header(CONTENT_DISPOSITION, getAttachmentHeader(file.getFileAttrs()))
-                    .body(toByteArray(file.getDataStream()));
-        } catch (IOException e) {
-            e.printStackTrace();// todo
-            throw new RuntimeException();
-        }
+        final InputStreamResource inputStreamResource = new InputStreamResource(file.getDataStream());
+        return ResponseEntity
+                .ok()
+                .header(CONTENT_DISPOSITION, getAttachmentHeader(file.getFileAttrs()))
+                .body(inputStreamResource);
     }
 
     @Override
@@ -68,7 +65,8 @@ public class FileController implements IFilesClient {
         fileAttrs.setContentType(file.getContentType());
         fileAttrs.setFileName(file.getOriginalFilename());
 
-        final FileAttributes SavedFileAttributes = fileStorageService.save(createDataFile(file, fileAttrs));
+        final FileAttributes SavedFileAttributes = fileStorageService
+                .save(createDataFile(file, fileAttrs));
 
         addHateoasLinks(SavedFileAttributes);
         return SavedFileAttributes;
@@ -93,7 +91,7 @@ public class FileController implements IFilesClient {
             dataFile.setFileAttrs(fileAttrs);
             return dataFile;
         } catch (IOException e) {
-            throw new RuntimeException();// todo
+            throw new PermanentStorageFailedException("Access errors. Permanent storage failed.");
         }
     }
 

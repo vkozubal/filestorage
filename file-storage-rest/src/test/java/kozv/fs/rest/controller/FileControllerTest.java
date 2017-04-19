@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MultiValueMap;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -63,8 +66,8 @@ public class FileControllerTest {
 
     @Test
     public void shouldSuccessfullyFindFileAttributes() {
-        when(fileStorageService.findOne(FileTestConstants.FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
-        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FileTestConstants.FILE_ID);
+        when(fileStorageService.findOne(FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
+        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FILE_ID);
 
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         assertFileAttributes(fileAttributesEntity.getBody());
@@ -72,13 +75,13 @@ public class FileControllerTest {
 
     @Test
     public void shouldServeFile() {
-        when(fileStorageService.findOne(FileTestConstants.FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
-        ResponseEntity<byte[]> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.FILE_URL, byte[].class, FileTestConstants.FILE_ID);
+        when(fileStorageService.findOne(FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
+        ResponseEntity<InputStreamResource> fileAttributesEntity = restTemplate.getForEntity(FILE_URL, InputStreamResource.class, FILE_ID);
 
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         assertThat(fileAttributesEntity.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
                 .isEqualTo(FileTestConstants.ATTACHMENT_HEADER);
-        assertThat(fileAttributesEntity.getBody()).isNotEmpty();
+        assertThat(fileAttributesEntity.getBody()).isNotNull();
     }
 
     @Test
@@ -99,7 +102,7 @@ public class FileControllerTest {
     @Test
     public void shouldHandleFileNotFound() {
         when(fileStorageService.findOne(anyString())).thenThrow(new PersistentFileNotFoundException(""));
-        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FileTestConstants.FILE_ID);
+        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FILE_ID);
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
     }
 
