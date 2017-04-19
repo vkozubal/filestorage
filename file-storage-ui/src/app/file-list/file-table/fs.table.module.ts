@@ -3,7 +3,14 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
 import { TableComponent } from "./fs.table.component";
-import { ButtonModule, DataTableModule, InputTextModule, MultiSelectModule, SharedModule } from "primeng/primeng";
+import {
+  ButtonModule,
+  CalendarModule,
+  DataTableModule,
+  InputTextModule,
+  MultiSelectModule,
+  SharedModule
+} from "primeng/primeng";
 
 @NgModule({
   declarations: [ TableComponent ],
@@ -11,6 +18,7 @@ import { ButtonModule, DataTableModule, InputTextModule, MultiSelectModule, Shar
     DataTableModule,
     SharedModule,
     ButtonModule,
+    CalendarModule,
     MultiSelectModule,
     InputTextModule,
     CommonModule,

@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { ActivatedRoute , Router} from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { File } from "../../common/file";
 
 import "primeng/resources/themes/omega/theme.css";
@@ -13,34 +13,72 @@ const template = require('./fs.table.component.html');
 })
 export class TableComponent {
   private files: Array<File> = [];
-  private extentions: Array<any>;
+  private maxDate: Date;
+  private minDate: Date;
+  private dateFrom: Date;
+  private dateTo: Date;
+  private contentTypes: Array<any>;
 
-  onRowSelect(row){
+  onRowSelect(row) {
     console.log('Row selected: ', row)
   }
 
-  onRowDblclick(event){
-    this.router.navigate(['/files', event.data.fileId]);
+  onRowDblclick(event) {
+    this.router.navigate([ '/files', event.data.fileId ]);
   }
 
   public constructor(private route: ActivatedRoute, private router: Router) {
     this.files = this.route.snapshot.data[ 'files' ];
 
-    // this.extentions = [ {
-    //   label: 'xls',
-    //   value: "application/xls"
-    // }, {
-    //   label: 'pdf',
-    //   value: 'application/pdf'
-    // } ];
+    let ContentTypes: Array<string> = this.files.map(value => value.contentType);
+    let uniqueContentTypes: Array<string> = Array.from(new Set<string>(ContentTypes));
+    this.contentTypes = uniqueContentTypes
+      .map(value => {
+        const [ first, second ] = value.split('/');
+        return {
+          label: second,
+          value: value
+        }
+      });
 
-    this.extentions = [];
-    this.extentions.push({ label: 'White', value: 'White' });
-    this.extentions.push({ label: 'Green', value: 'Green' });
-    this.extentions.push({ label: 'Silver', value: 'Silver' });
-    this.extentions.push({ label: 'Maroon', value: 'Maroon' });
-    this.extentions.push({ label: 'Red', value: 'Red' });
-    this.extentions.push({ label: 'Orange', value: 'Orange' });
-    this.extentions.push({ label: 'Blue', value: 'Blue' });
+    const sorted = this.files
+      .map(value => value.uploadDate)
+      .sort((a, b) => {
+        return a - b
+      });
+
+    this.minDate = new Date(sorted[ 0 ]);
+    this.maxDate = new Date(sorted[ sorted.length - 1 ]);
+  }
+
+  filterByDates(dt, value, range) {
+    const that = this;
+
+    let dateFrom = (that.dateFrom || that.minDate).getTime();
+    let dateTo = (that.dateTo || that.maxDate ).getTime();
+
+    if ( dateFrom > dateTo ) {
+      dateTo = dateFrom;
+      that.dateTo = new Date(dateTo);
+    }
+
+    let allowedDates = this.files.filter(file => {
+      let creationDate = new Date(file.uploadDate).getTime();
+      return creationDate >= dateFrom
+        && creationDate < dateTo + 86400000;
+    }).map(value => value.uploadDate);
+
+    allowedDates = TableComponent.handleNoRecordsFound(allowedDates);
+    dt.filter(allowedDates, 'uploadDate', 'in');
+    return value;
+  }
+
+  private static handleNoRecordsFound(allowedDates: number[]) {
+    if ( allowedDates.length == 0 ) {
+      // do not leave the array empty
+      // if empty this filter parameter is ignored
+      allowedDates.push(0);
+    }
+    return allowedDates;
   }
 }

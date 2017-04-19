@@ -3,11 +3,11 @@ export class File {
   fileName: string;
   contentType: string;
   metadata: FileMetadata;
+  uploadDate: number;
   _links: Object
 }
 
 export class FileMetadata {
-  uploadDate: Date;
   comments: Array<FileComment>
 }
 

@@ -25,6 +25,7 @@ export class FileDetailsComponent {
     const that = this;
     this.commentsService.createComment(this.file, event)
       .then(comment => {
+          // add comment to the list
           that.comments = that.comments || [];
           that.comments.unshift(comment);
           that.comment = new FileComment();
@@ -36,7 +37,8 @@ export class FileDetailsComponent {
     const that = this;
     this.commentsService.deleteComment(event).then(
       () => {
-        const index = that.comments.findIndex(value => value.commentId === event.commentId);
+        // find and remove item from the list
+        const index = this.findIndex(that, event);
         if ( index > -1 ) {
           that.comments.splice(index, 1);
         }
@@ -45,12 +47,21 @@ export class FileDetailsComponent {
   }
 
   updateMessage(event) {
+    const that = this;
     this.commentsService.updateComment(event)
       .then(
-        () => {
-          // todo update comment
+        (updated: FileComment) => {
+          // find and update item
+          const index = this.findIndex(that, event);
+          if ( index > -1 ) {
+            that.comments.splice(index, 1, updated);
+          }
         }
       );
+  }
+
+  private findIndex(that: FileDetailsComponent, event) {
+    return that.comments.findIndex(value => value.commentId === event.commentId);
   }
 
   resetComment() {
