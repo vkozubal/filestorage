@@ -15,7 +15,7 @@ export class FileDetailsComponent {
   comment: FileComment = new FileComment();
 
   constructor(private route: ActivatedRoute,
-              private commentsService: CommentsService, private http: Http) {
+              private commentsService: CommentsService) {
 
     this.file = this.route.snapshot.data[ 'file' ];
     this.comments = this.route.snapshot.data[ 'comments' ];

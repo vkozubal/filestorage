@@ -20,7 +20,6 @@ export class TableComponent {
   private contentTypes: Array<any>;
 
   onRowSelect(row) {
-    console.log('Row selected: ', row)
   }
 
   onRowDblclick(event) {

@@ -18,7 +18,6 @@ export class ContenteditableModel implements OnChanges {
 
   // changes from model to view
   ngOnChanges(changes) {
-    console.log('changes: ', changes, this.model);
     if ( isPropertyUpdated(changes, this.lastViewModel) ) {
       this.lastViewModel = this.model;
       this.refreshView();

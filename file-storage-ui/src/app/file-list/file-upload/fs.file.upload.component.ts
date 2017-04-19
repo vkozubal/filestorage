@@ -15,7 +15,6 @@ export class SimpleDemoComponent {
   }
 
   onUpload(event) {
-    console.log('uploaded');
     for ( let file of event.files ) {
       this.uploadedFiles.push(file);
     }
