@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @EnableAutoConfiguration
 @RunWith(SpringRunner.class)
@@ -35,6 +37,7 @@ public class CommentsControllerTest {
     private static final String FILE_ID = "file-id";
     private static final String COMMENT_ID = "comment-id";
     private static final String COMMENTS_URL = ALL_FILES_URL + "/" + FILE_ID + "/comments";
+    private static final String COMMENT_URL = COMMENTS_URL + "/{comment-id}";
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -54,13 +57,9 @@ public class CommentsControllerTest {
         assertSelfLink(comment);
     }
 
-    private AbstractCharSequenceAssert<?, String> assertSelfLink(FileComment comment) {
-        return assertThat(comment.getLink(Link.REL_SELF).getHref()).endsWith(COMMENTS_URL + "/1");
-    }
-
     @Test
     public void shouldDeleteComment() {
-        final ResponseEntity<Void> responseEntity = restTemplate.exchange(COMMENTS_URL + "/" + COMMENT_ID, HttpMethod.DELETE, null, Void.class);
+        final ResponseEntity<Void> responseEntity = restTemplate.exchange(COMMENT_URL, HttpMethod.DELETE, null, Void.class, COMMENT_ID);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(commentsService).deleteComment(FILE_ID, COMMENT_ID);
     }
@@ -69,11 +68,10 @@ public class CommentsControllerTest {
     public void shouldGetComment() {
         reset(commentsService);
         when(commentsService.getComment(FILE_ID, COMMENT_ID)).thenReturn(getFileComment());
-        final String url = COMMENTS_URL + "/" + COMMENT_ID;
-        final ResponseEntity<FileComment> entity = restTemplate.getForEntity(url, FileComment.class);
+        final ResponseEntity<FileComment> entity = restTemplate.getForEntity(COMMENT_URL, FileComment.class, COMMENT_ID);
 
         verify(commentsService).getComment(FILE_ID, COMMENT_ID);
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getStatusCode()).isEqualTo(OK);
     }
 
     @Test
@@ -82,9 +80,13 @@ public class CommentsControllerTest {
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[1]);
 
         final FileComment comment = getFileComment();
-        restTemplate.put(COMMENTS_URL + "/" + comment.getCommentId(), comment);
+        final HttpEntity<FileComment> entity = new HttpEntity<>(comment);
 
+        final ResponseEntity<FileComment> updateEntity = restTemplate.exchange(COMMENT_URL, HttpMethod.PUT, entity, FileComment.class, comment.getCommentId());
+        assertSelfLink(updateEntity.getBody());
+        assertThat(updateEntity.getStatusCode()).isEqualTo(OK);
         verify(commentsService).updateComment(FILE_ID, comment);
+
     }
 
     @Test
@@ -98,7 +100,11 @@ public class CommentsControllerTest {
         final Collection<FileComment> comments = commentsEntity.getBody().getContent();
         assertThat(comments.size()).isEqualTo(1);
         assertSelfLink(comments.iterator().next());
-        assertThat(commentsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(commentsEntity.getStatusCode()).isEqualTo(OK);
+    }
+
+    private void assertSelfLink(FileComment comment) {
+        assertThat(comment.getLink(Link.REL_SELF).getHref()).endsWith(COMMENTS_URL + "/1");
     }
 
     private FileComment getFileComment() {

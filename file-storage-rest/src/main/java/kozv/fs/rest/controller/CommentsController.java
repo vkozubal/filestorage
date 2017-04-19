@@ -33,8 +33,7 @@ public class CommentsController implements ICommentsClient {
     @Override
     public FileComment createComment(@PathVariable String fileId, @RequestBody FileComment comment) {
         final FileComment entity = commentsService.createComment(fileId, comment);
-        addSelfLink(fileId, entity);
-        return entity;
+        return addSelfLink(fileId, entity);
     }
 
     @Override
@@ -51,10 +50,12 @@ public class CommentsController implements ICommentsClient {
     public FileComment updateComment(@PathVariable String commentId, @PathVariable String fileId,
                                      @RequestBody FileComment comment) {
         comment.setCommentId(commentId);
-        return commentsService.updateComment(fileId, comment);
+        final FileComment updated = commentsService.updateComment(fileId, comment);
+        return addSelfLink(fileId, updated);
     }
 
-    private void addSelfLink(String fileId, FileComment entity) {
+    private FileComment addSelfLink(String fileId, FileComment entity) {
         entity.add(linkTo(methodOn(getClass()).getComment(fileId, entity.getCommentId())).withSelfRel());
+        return entity;
     }
 }
