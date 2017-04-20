@@ -5,6 +5,7 @@ import com.mongodb.gridfs.GridFSDBFile;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
 import kozv.fs.service.api.IFileStorageService;
+import kozv.fs.service.exception.PersistentFileNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Sets;
 import org.junit.Test;
@@ -71,6 +72,19 @@ public class FileStorageServiceTest {
         assertThat(storedFile.getFileAttrs().getFileId()).isEqualTo(fileId);
 
         assertFileAttributes(beforeSaveDate, TEMP_FILE_NAME, storedFile.getFileAttrs());
+    }
+
+    @Test(expected = PersistentFileNotFoundException.class)
+    public void shouldDeleteComment(){
+        final String fileId = storeFile("scratchFile-1.txt").getFileId();
+        assertThat(fileId).isBlank();
+
+        final DataFile data = fileStorageService.findOne(fileId);
+        assertThat(data).isNotNull();
+
+        fileStorageService.deleteFile(fileId);
+
+        fileStorageService.findOne(fileId);
     }
 
     private FileAttributes storeFile(String fileName) {

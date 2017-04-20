@@ -4,6 +4,7 @@ import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
 import kozv.fs.api.model.FileComment;
 import kozv.fs.service.api.ICommentsService;
+import kozv.fs.service.exception.PersistentCommentNotFoundException;
 import org.assertj.core.util.Sets;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,6 +101,11 @@ public class FileCommentsServiceTest {
         assertThat(comments.size()).isEqualTo(2);
         final Set<String> actualId = comments.stream().map(FileComment::getCommentId).collect(Collectors.toSet());
         assertThat(actualId).isEqualTo(expectedId);
+    }
+
+    @Test(expected = PersistentCommentNotFoundException.class)
+    public void shouldThrowExceptionIfCommentNotExist(){
+        commentsService.getComment(fileId, "any-non-existing-id");
     }
 
     private FileComment createComment() {

@@ -68,6 +68,11 @@ public class FileStorageService implements IFileStorageService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteFile(String id) {
+        gridFsOperations.delete(getByIdQuery(id));
+    }
+
     private GridFSDBFile findOneById(String id) {
         final GridFSDBFile persistedFile = gridFsOperations.findOne(getByIdQuery(id));
         if (persistedFile == null) {

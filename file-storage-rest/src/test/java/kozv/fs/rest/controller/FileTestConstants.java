@@ -16,7 +16,7 @@ class FileTestConstants {
     static final String FILE_ID = "file-id";
     static final String ALL_FILES_URL = "/api/files";
     static final String FILE_URL = ALL_FILES_URL + "/{fileId}";
-    static final String GET_FILE_ATTRS_URL = FILE_URL + "/attributes";
+    static final String FILE_DOWNLOAD_URL = FILE_URL + "/download";
     static final DataFile DATA_FILE;
     private static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
 
@@ -39,7 +39,7 @@ class FileTestConstants {
         return createMultipartRequest(resource);
     }
 
-    static MultiValueMap<String, Object> createMultipartRequest(ClassPathResource resource) {
+    static MultiValueMap<String, Object> createMultipartRequest(Object resource) {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.add("file", resource);
         return map;

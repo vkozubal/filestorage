@@ -25,4 +25,9 @@ public interface IFileStorageService {
      * @return all user files
      */
     List<FileAttributes> findAll();
+
+    /**
+     * remove File by id
+     */
+    void deleteFile(String id);
 }

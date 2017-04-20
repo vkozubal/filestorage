@@ -99,7 +99,15 @@ public class FileCommentsService implements ICommentsService {
     }
 
     private Collection<FileComment> retrieveComments(GridFSDBFile fileById) {
-        return fromDBObject(fileById.getMetaData()).getComments();
+        final DBObject metaData = fileById.getMetaData();
+        if (metaData == null) {
+            return Collections.emptySet();
+        }
+        final Collection<FileComment> comments = fromDBObject(metaData).getComments();
+        if (comments == null) {
+            return Collections.emptySet();
+        }
+        return comments;
     }
 
     private FileComment getCommentById(String commentId, GridFSDBFile file) {

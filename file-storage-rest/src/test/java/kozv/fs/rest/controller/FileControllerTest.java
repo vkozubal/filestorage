@@ -22,8 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MultiValueMap;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,7 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @EnableAutoConfiguration
 @RunWith(SpringRunner.class)
@@ -47,12 +48,12 @@ public class FileControllerTest {
 
     @Test
     public void shouldSaveFile() {
-        setupMock();
+        setupServiceMock();
 
         ResponseEntity<FileAttributes> fileAttributesEntity =
                 restTemplate.postForEntity(ALL_FILES_URL, createPostRequest(), FileAttributes.class);
 
-        assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+        assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(CREATED);
 
         then(fileStorageService).should().save(any(DataFile.class));
 
@@ -67,7 +68,7 @@ public class FileControllerTest {
     @Test
     public void shouldSuccessfullyFindFileAttributes() {
         when(fileStorageService.findOne(FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
-        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FILE_ID);
+        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.FILE_URL, FileAttributes.class, FILE_ID);
 
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         assertFileAttributes(fileAttributesEntity.getBody());
@@ -76,7 +77,7 @@ public class FileControllerTest {
     @Test
     public void shouldServeFile() {
         when(fileStorageService.findOne(FILE_ID)).thenReturn(FileTestConstants.DATA_FILE);
-        ResponseEntity<InputStreamResource> fileAttributesEntity = restTemplate.getForEntity(FILE_URL, InputStreamResource.class, FILE_ID);
+        ResponseEntity<InputStreamResource> fileAttributesEntity = restTemplate.getForEntity(FILE_DOWNLOAD_URL, InputStreamResource.class, FILE_ID);
 
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         assertThat(fileAttributesEntity.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
@@ -102,33 +103,42 @@ public class FileControllerTest {
     @Test
     public void shouldHandleFileNotFound() {
         when(fileStorageService.findOne(anyString())).thenThrow(new PersistentFileNotFoundException(""));
-        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.GET_FILE_ATTRS_URL, FileAttributes.class, FILE_ID);
+        ResponseEntity<FileAttributes> fileAttributesEntity = restTemplate.getForEntity(FileTestConstants.FILE_URL, FileAttributes.class, FILE_ID);
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void shouldHandleBigFile() {
-        setupMock();
+        setupServiceMock();
         final MultiValueMap<String, Object> postRequest = createPostRequest("big-file.zip");
 
         ResponseEntity<FileAttributes> responseEntity = restTemplate.postForEntity(
                 ALL_FILES_URL, postRequest, FileAttributes.class);
 
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
+        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(CREATED);
+    }
+
+    @Test
+    public void shouldDeleteFile() {
+        final ResponseEntity<Void> responseEntity =
+                restTemplate.exchange(FILE_URL, HttpMethod.DELETE, null, Void.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(NO_CONTENT);
+        verify(fileStorageService).deleteFile(FILE_ID);
     }
 
     private void assertFileLinks(FileAttributes fileAttrs) {
         final Link selfLink = fileAttrs.getLink(Link.REL_SELF);
-        assertThat(selfLink.getHref()).endsWith("/api/files/" + FILE_ID + "/attributes");
+        assertThat(selfLink.getHref()).endsWith("/api/files/" + FILE_ID);
 
         final Link downloadLink = fileAttrs.getLink("download");
-        assertThat(downloadLink.getHref()).endsWith("/api/files/" + FILE_ID);
+        assertThat(downloadLink.getHref()).endsWith("/api/files/" + FILE_ID + "/download");
 
         final Link commentsLink = fileAttrs.getLink("comments");
         assertThat(commentsLink.getHref()).endsWith("/api/files/" + FILE_ID + "/comments");
     }
 
-    private void setupMock() {
+    private void setupServiceMock() {
         when(fileStorageService.save(any(DataFile.class)))
                 .thenAnswer(invocationOnMock -> {
                     final FileAttributes fileAttrs = ((DataFile) invocationOnMock.getArguments()[0]).getFileAttrs();

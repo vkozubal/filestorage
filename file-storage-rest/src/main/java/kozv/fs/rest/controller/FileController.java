@@ -72,6 +72,11 @@ public class FileController implements IFilesClient {
         return SavedFileAttributes;
     }
 
+    @Override
+    public void deleteFile(@PathVariable String fileId) {
+        fileStorageService.deleteFile(fileId);
+    }
+
     @ExceptionHandler(FSServiceException.class)
     public ResponseEntity handleNotFound(FSServiceException e) {
         return ResponseEntity.notFound().build();
@@ -91,7 +96,7 @@ public class FileController implements IFilesClient {
             dataFile.setFileAttrs(fileAttrs);
             return dataFile;
         } catch (IOException e) {
-            throw new PermanentStorageFailedException("Access errors. Permanent storage failed.");
+            throw new TemporaryStorageFailedException("Access errors. Permanent storage failed.");
         }
     }
 
