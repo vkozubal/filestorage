@@ -23,7 +23,7 @@ export class FileDetailsComponent {
 
   createMessage(event) {
     const that = this;
-    this.commentsService.createComment(this.file, event)
+    return this.commentsService.createComment(this.file, event)
       .then(comment => {
           // add comment to the list
           that.comments = that.comments || [];
@@ -35,7 +35,7 @@ export class FileDetailsComponent {
 
   deleteMessage(event) {
     const that = this;
-    this.commentsService.deleteComment(event).then(
+    return this.commentsService.deleteComment(event).then(
       () => {
         // find and remove item from the list
         const index = this.findIndex(that, event);
@@ -48,7 +48,7 @@ export class FileDetailsComponent {
 
   updateMessage(event) {
     const that = this;
-    this.commentsService.updateComment(event)
+    return this.commentsService.updateComment(event)
       .then(
         (updated: FileComment) => {
           // find and update item

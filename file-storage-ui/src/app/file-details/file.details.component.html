@@ -24,12 +24,14 @@
         Comments:
         <fs-editable-comment (onUpdate)="createMessage($event)"
                              (onDelete)="resetComment()"
+                             [persisted]="false"
                              [value]="comment">
         </fs-editable-comment>
 
         <div *ngFor="let item of comments">
           <fs-editable-comment (onUpdate)="updateMessage($event)"
                                (onDelete)="deleteMessage(item)"
+                               [persisted]="true"
                                [value]="item">
           </fs-editable-comment>
         </div>

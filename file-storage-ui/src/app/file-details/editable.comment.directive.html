@@ -1,23 +1,31 @@
 <div class="comment-field">
   <div class="comment-box">
 
-    <div aria-label="Write a comment"
+    <div aria-label="Write a comment here ..."
          [(contenteditableModel)]="comment.text"
-         placeholder="Write a comment"
+         placeholder="Write a comment ..."
          aria-multiline="true"
          class="text-edit-input"
-         contenteditable="true"
-         role="textbox">
-      </div>
+         contenteditable="false"
+         role="textbox"
+         #editableInput>
+    </div>
 
-      <!--<div *ngIf="!comment?.text?.length" class="comment-bottom-bar">
-        <a class="edit-button">Edit...</a>
-      </div>-->
+    <div *ngIf="!editMode && persisted" class="comment-bottom-bar">
+      <a (click)="enableEditing(editableInput)" class="edit-button">Edit...</a>
+    </div>
 
-    <div *ngIf="comment?.text?.length" class="post-area">
-      <button class="button-as-link" (click)="update()">Post</button>
-      <span> • </span>
-      <button class="button-as-link" (click)="cancel()">Cancel</button>
+    <div *ngIf="!editMode && persisted" class="post-area">
+      <button class="button-as-link" (click)="delete()">Delete</button>
+    </div>
+
+    <div *ngIf="editMode && (persisted || hasChanges())" class="post-area">
+      <button class="button-as-link" (click)="reset()">Cancel</button>
+
+      <span *ngIf="hasChanges()">
+        <span> • </span>
+        <button class="button-as-link" (click)="update()">Save</button>
+      </span>
     </div>
   </div>
 </div>
