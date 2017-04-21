@@ -1,13 +1,13 @@
 zuul:
-    routes:
-        files:
-            path: /api/**
-            serviceId: fs-service
-            stripPrefix: false
+  routes:
+    files:
+      path: /api/**
+      serviceId: fs-service
+      stripPrefix: false
 
 spring:
-    resources:
-        static-locations: classpath:/META-INF/resources/webjars/file-storage-ui/1.0.0/
+  resources:
+    static-locations: classpath:/META-INF/resources/webjars/file-storage-ui/1.0.0/
 
 eureka:
   client:
@@ -15,9 +15,10 @@ eureka:
       defaultZone: ${vcap.services.eureka-service.credentials.uri:http://127.0.0.1:8761}/eureka/
 
 ---
+
 spring:
-  profiles: cloud
+    profiles: cloud
 eureka:
-  instance:
-    hostname: ${APPLICATION_DOMAIN}
-    nonSecurePort: 80
+    instance:
+      hostname: ${APPLICATION_DOMAIN}
+      nonSecurePort: 80

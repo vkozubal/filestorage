@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Getter
 @Component
-@PropertySource(value = "classpath:application.properties")
+@PropertySource(value = "classpath:fs.cleanup.properties")
 public class FileCleanupProperties {
 
     /**
