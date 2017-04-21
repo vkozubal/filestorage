@@ -39,8 +39,8 @@ public class ScheduledOutdatedFilesCleanerTest {
     }
 
     @Test
-    public void shouldMakeAQueryToDB() throws Exception {
-        cleanupProperties.setFileExpirationPeriodVal("P2D");
+    public void shouldMakeAQueryToDB() {
+        cleanupProperties.setFileExpirationPeriod("P2D");
         cleaner.cleanOutdatedFiles();
         verify(gridFsOperationsMock).delete(captor.capture());
 
@@ -53,9 +53,14 @@ public class ScheduledOutdatedFilesCleanerTest {
     }
 
     @Test
-    public void shouldRespectISO_8601() throws ParseException {
+    public void shouldRespectISO_8601() {
         final long duration = cleaner.getDuration("PT1H30M");
         assertThat(duration).isEqualTo(5400000);
+    }
+
+    @Test
+    public void shouldFallBackToDefailtConfigInCaseOfInvalidFormat() throws ParseException {
+        assertThat(cleaner.getDuration("Adsf")).isEqualTo(172800000L);
     }
 
     @Test

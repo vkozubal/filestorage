@@ -1,4 +1,4 @@
-package kozv.fs.api.service;
+package kozv.fs.service.api;
 
 import kozv.fs.api.model.FileComment;
 

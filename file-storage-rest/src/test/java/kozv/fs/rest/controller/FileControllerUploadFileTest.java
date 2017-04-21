@@ -2,8 +2,8 @@ package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
-import kozv.fs.api.service.IFileStorageService;
-import kozv.fs.api.service.exception.PersistentFileNotFoundException;
+import kozv.fs.service.api.IFileStorageService;
+import kozv.fs.service.exception.PersistentFileNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

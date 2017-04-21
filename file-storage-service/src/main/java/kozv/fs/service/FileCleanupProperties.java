@@ -16,5 +16,5 @@ public class FileCleanupProperties {
      * @see <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">format</a>
      */
     @Value("${fs.file.expiration.period}")
-    private String fileExpirationPeriodVal;
+    private String fileExpirationPeriod;
 }

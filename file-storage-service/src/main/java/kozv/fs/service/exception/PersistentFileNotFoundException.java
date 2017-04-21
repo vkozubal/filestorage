@@ -1,4 +1,4 @@
-package kozv.fs.api.service.exception;
+package kozv.fs.service.exception;
 
 
 /**

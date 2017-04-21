@@ -3,7 +3,7 @@ package kozv.fs.service;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
 import kozv.fs.api.model.FileComment;
-import kozv.fs.api.service.ICommentsService;
+import kozv.fs.service.api.ICommentsService;
 import org.assertj.core.util.Sets;
 import org.junit.Before;
 import org.junit.Test;

@@ -2,7 +2,7 @@ package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.FileComment;
 import kozv.fs.api.rest.ICommentsClient;
-import kozv.fs.api.service.ICommentsService;
+import kozv.fs.service.api.ICommentsService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;

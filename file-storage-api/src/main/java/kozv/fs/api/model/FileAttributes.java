@@ -4,14 +4,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.ResourceSupport;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Contains all file attributes.
  */
-@EqualsAndHashCode(callSuper = false)
 @Data
-public class FileAttributes extends ResourceSupport {
+@EqualsAndHashCode(callSuper = false)
+public class FileAttributes extends ResourceSupport implements Serializable{
     private String fileId;
     private String fileName;
     private String contentType;

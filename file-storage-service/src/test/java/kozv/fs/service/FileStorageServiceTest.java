@@ -4,7 +4,7 @@ package kozv.fs.service;
 import com.mongodb.gridfs.GridFSDBFile;
 import kozv.fs.api.model.DataFile;
 import kozv.fs.api.model.FileAttributes;
-import kozv.fs.api.service.IFileStorageService;
+import kozv.fs.service.api.IFileStorageService;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Sets;
 import org.junit.Test;
