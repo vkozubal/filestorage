@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { Http } from "@angular/http";
 import { ActivatedRoute } from "@angular/router";
-import { File } from "../common";
+import { FSFile } from "../common";
 import { FileComment } from "../common/file";
 import { CommentsService } from "../common/comments.service";
 
@@ -10,7 +10,7 @@ import { CommentsService } from "../common/comments.service";
   templateUrl: './file.details.component.html'
 })
 export class FileDetailsComponent {
-  file: File;
+  file: FSFile;
   comments: Array<FileComment>;
   comment: FileComment = new FileComment();
 

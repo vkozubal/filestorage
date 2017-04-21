@@ -1,36 +1,71 @@
-<div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
-  <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-  <input #gb type="text" pInputText size="50" placeholder="Search for ">
+<div class="ui-widget-header">
 
-  <p-multiSelect [options]="contentTypes" defaultLabel="All"
-                 (onChange)="dt.filter($event.value, 'contentType', 'in')">
-  </p-multiSelect>
+  <div class="row">
 
-  <p-calendar
-    (onSelect)="filterByDates(dt, $event, 'from')"
-    [(ngModel)]="dateFrom"
-    readonlyInput="readonlyInput"
-    [minDate]="minDate"
-    [maxDate]="maxDate">
-  </p-calendar>
+    <div class="col-sm-6">
+      <div class="input-group input-group-sm">
 
-  <p-calendar
-    (onSelect)="filterByDates(dt, $event, 'to')"
-    [(ngModel)]="dateTo"
-    readonlyInput="readonlyInput"
-    [minDate]="dateFrom || minDate"
-    [maxDate]="maxDate">
-  </p-calendar>
+        <div class="input-group-addon">
+          <i class="fa fa-search"></i>
+        </div>
+        <input #gb type="text" class="form-control" placeholder="Search for ">
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="input-group input-group-sm">
+        <p-multiSelect
+          [options]="contentTypes"
+          defaultLabel="All"
+          class="multi-select"
+          (onChange)="dt.filter($event.value, 'contentType', 'in')">
+        </p-multiSelect>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4 input-group-sm">
+      <p-calendar
+        [showIcon]="true"
+        (onSelect)="filterByDates(dt, $event)"
+        [(ngModel)]="dateFrom"
+        readonlyInput="readonlyInput"
+        [minDate]="minDate"
+        [maxDate]="maxDate">
+      </p-calendar>
+    </div>
+
+    <div class="col-sm-4 input-group-sm">
+      <p-calendar
+        [showIcon]="true"
+        (onSelect)="filterByDates(dt, $event)"
+        [(ngModel)]="dateTo"
+        readonlyInput="readonlyInput"
+        [minDate]="dateFrom || minDate"
+        [maxDate]="maxDate">
+      </p-calendar>
+    </div>
+
+    <div class="col-sm-4 text-center">
+      <button type="button"
+              [disabled]="!dateFrom && !dateTo"
+              class="btn btn-sm"
+              (click)="resetDates(dt)">
+        <i class="fa fa-times"></i>
+        Reset Dates
+      </button>
+    </div>
+  </div>
 </div>
 
 <p-dataTable [value]="files"
              scrollable="true"
-             scrollHeight="510px"
+             scrollHeight="500px"
              [rows]="files?.length"
              virtualScroll="virtualScroll"
              selectionMode="single"
              [(selection)]="selectedFile" dataKey="id"
-             (onRowSelect)="onRowSelect($event)"
              (onRowDblclick)="onRowDblclick($event)"
              [globalFilter]="gb" #dt>
 
@@ -47,11 +82,18 @@
   <p-column field="contentType" header="Content Type" [sortable]="true">
   </p-column>
 
-  <p-column styleClass="col-button" header="Download">
+  <p-column styleClass="col-button" header="Actions">
     <template let-file="rowData" pTemplate="body">
-      <a pButton type="button" icon="fa fa-download"
-         href="{{file?._links?.download?.href}}" download>
+
+      <a type="button" href="{{file?._links?.download?.href}}" download
+         class="btn btn-primary btn-xs">
+        <i class="fa fa-download"></i>
       </a>
+
+      <button type="button" class="btn btn-danger btn-xs"
+              (click)="remove(file, $event)">
+        <i class="fa fa-trash-o"></i>
+      </button>
     </template>
   </p-column>
 </p-dataTable>

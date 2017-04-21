@@ -1,16 +1,29 @@
 <p-dialog header="Upload To File Storage" modal="true" width="640" [(visible)]="display">
 
-  <fs-file-upload></fs-file-upload>
+  <fs-file-upload #upl (uploaded)="refresh()"></fs-file-upload>
+
   <p-footer>
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-      <button type="button" pButton icon="fa-check" (click)="display=false" label="Done"></button>
+
+      <button type="button" class="btn btn-success"
+              (click)="display=false; upl.fireUploaded(); upl.uploader.clearQueue()">
+        <i class="fa fa-check"></i>
+        Done
+      </button>
     </div>
   </p-footer>
 </p-dialog>
 
-<button type="text"
-        (click)="showDialog()"
-        pButton icon="fa fa-upload"
-        label="Upload files"></button>
+<div class="row">
+  <div class="col-sm-9">
+  </div>
+  <div class="col-sm-3 text-right upload-button">
 
-<fs-files-table></fs-files-table>
+    <button type="button" class="btn btn-primary"
+            (click)="showDialog()">
+      <i class="fa fa-upload"></i>
+      Upload files
+    </button>
+  </div>
+</div>
+<fs-files-table [files]="files" class="fs-files-table"></fs-files-table>

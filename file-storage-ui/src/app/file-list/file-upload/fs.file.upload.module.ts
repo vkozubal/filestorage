@@ -1,14 +1,14 @@
 import { NgModule } from "@angular/core";
 
-import { SimpleDemoComponent } from "./fs.file.upload.component";
+import { UploadFileComponent } from "./fs.file.upload.component";
 import { CommonModule } from "@angular/common";
 
-import { FileUploadModule, GrowlModule, MessagesModule } from "primeng/primeng";
+import { FileUploadModule } from "ng2-file-upload";
 
 @NgModule({
-  declarations: [ SimpleDemoComponent ],
-  imports: [ FileUploadModule, CommonModule, GrowlModule, MessagesModule ],
-  exports: [ SimpleDemoComponent ]
+  declarations: [ UploadFileComponent ],
+  imports: [ CommonModule, FileUploadModule ],
+  exports: [ UploadFileComponent ]
 })
 export class FSFileUploadModule {
 }

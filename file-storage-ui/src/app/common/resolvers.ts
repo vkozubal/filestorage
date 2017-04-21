@@ -1,22 +1,22 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, Resolve } from "@angular/router";
-import { File } from "./file";
+import { FSFile } from "./file";
 import { FileService } from "./file.service";
 import { Observable } from "rxjs/Rx";
 import { CommentsService } from "./comments.service";
 
 @Injectable()
-export class FilesResolver implements Resolve<File> {
-  constructor(private backend: FileService) {
+export class FilesResolver implements Resolve<FSFile> {
+  constructor(private fileService: FileService) {
   }
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> | Promise<any> | any {
-    return this.backend.getFiles();
+    return this.fileService.getFiles();
   }
 }
 
 @Injectable()
-export class FileResolver implements Resolve<File> {
+export class FileResolver implements Resolve<FSFile> {
   constructor(private fileService: FileService) {
   }
 
@@ -26,7 +26,7 @@ export class FileResolver implements Resolve<File> {
 }
 
 @Injectable()
-export class CommentsResolver implements Resolve<File> {
+export class CommentsResolver implements Resolve<FSFile> {
   constructor(private fileService: FileService, private commentsService: CommentsService) {
   }
 

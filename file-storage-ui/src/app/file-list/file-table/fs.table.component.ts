@@ -1,34 +1,31 @@
-import { Component } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { File } from "../../common/file";
+import { Component, Input, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { FSFile } from "../../common/file";
 
+import "font-awesome/css/font-awesome.min.css";
 import "primeng/resources/themes/omega/theme.css";
 import "primeng/resources/primeng.min.css";
-import "font-awesome/css/font-awesome.min.css";
+import { FileService } from "../../common/file.service";
+
 const template = require('./fs.table.component.html');
 
 @Component({
   selector: 'fs-files-table',
   template: template
 })
-export class TableComponent {
-  private files: Array<File> = [];
+export class TableComponent implements OnInit {
+  @Input('files') files: Array<FSFile>;
   private maxDate: Date;
+
   private minDate: Date;
   private dateFrom: Date;
   private dateTo: Date;
   private contentTypes: Array<any>;
-
-  onRowSelect(row) {
-  }
-
   onRowDblclick(event) {
     this.router.navigate([ '/files', event.data.fileId ]);
   }
 
-  public constructor(private route: ActivatedRoute, private router: Router) {
-    this.files = this.route.snapshot.data[ 'files' ];
-
+  ngOnInit(): void {
     let ContentTypes: Array<string> = this.files.map(value => value.contentType);
     let uniqueContentTypes: Array<string> = Array.from(new Set<string>(ContentTypes));
     this.contentTypes = uniqueContentTypes
@@ -48,6 +45,17 @@ export class TableComponent {
 
     this.minDate = new Date(sorted[ 0 ]);
     this.maxDate = new Date(sorted[ sorted.length - 1 ]);
+  }
+
+
+  public constructor(private router: Router,
+                     private fService: FileService) {
+  }
+
+  resetDates(dt) {
+    this.dateTo = null;
+    this.dateFrom = null;
+    dt.filter([], 'uploadDate', 'in');
   }
 
   filterByDates(dt, value, range) {
@@ -70,6 +78,16 @@ export class TableComponent {
     allowedDates = TableComponent.handleNoRecordsFound(allowedDates);
     dt.filter(allowedDates, 'uploadDate', 'in');
     return value;
+  }
+
+  remove(file) {
+    const that = this;
+    this.fService.removeFile(file).then(value => {
+      let index = this.files.indexOf(file);
+      if ( index > -1 ) {
+        that.files.splice(index, 1)
+      }
+    })
   }
 
   private static handleNoRecordsFound(allowedDates: number[]) {

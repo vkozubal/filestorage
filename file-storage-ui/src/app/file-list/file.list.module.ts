@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
 
+import { DialogModule } from "primeng/primeng";
+
 import { FSFileUploadModule } from "./file-upload";
 import { FSFileTableModule } from "./file-table";
-import { CommonModule } from "../common";
-
-import { ButtonModule, DialogModule } from "primeng/primeng";
+import { FsCommonModule } from "../common";
 import { FSFilesListComponent } from "./file.list.component";
 
 @NgModule({
@@ -12,9 +12,8 @@ import { FSFilesListComponent } from "./file.list.component";
   imports: [
     FSFileUploadModule,
     FSFileTableModule,
-    CommonModule,
-    DialogModule,
-    ButtonModule
+    FsCommonModule,
+    DialogModule
   ],
   exports: [ FSFilesListComponent ]
 })

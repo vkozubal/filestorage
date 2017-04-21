@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
-import { File, FileComment } from "./file";
+import { FSFile, FileComment } from "./file";
 
 import "rxjs/add/operator/toPromise";
 
@@ -9,7 +9,7 @@ export class CommentsService {
   constructor(private http: Http) {
   }
 
-  getComments(file: File): Promise<Array<FileComment>> {
+  getComments(file: FSFile): Promise<Array<FileComment>> {
     let url = file._links[ 'comments' ].href;
     return this.http.get(url)
       .toPromise()
@@ -26,16 +26,16 @@ export class CommentsService {
   updateComment(comment: FileComment): Promise<FileComment> {
     return this.http.put(comment._links[ 'self' ].href, comment)
       .toPromise()
-      .then(this.asComment);
+      .then(CommentsService.asComment);
   }
 
-  createComment(file: File, comment: FileComment): Promise<FileComment> {
+  createComment(file: FSFile, comment: FileComment): Promise<FileComment> {
     return this.http.post(file._links[ 'comments' ].href, comment)
       .toPromise()
-      .then(this.asComment)
+      .then(CommentsService.asComment)
   }
 
-  private asComment(response) {
+  private static asComment(response) {
     return response.json() as FileComment
   }
 

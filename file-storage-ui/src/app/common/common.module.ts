@@ -9,5 +9,5 @@ import { CommentsService } from "./comments.service";
     FileService, CommentsResolver
   ]
 })
-export class CommonModule {
+export class FsCommonModule {
 }

@@ -1,4 +1,4 @@
-export class File {
+export class FSFile {
   fileId: string;
   fileName: string;
   contentType: string;

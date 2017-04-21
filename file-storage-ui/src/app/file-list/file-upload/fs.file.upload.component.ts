@@ -1,25 +1,21 @@
-import { Component } from "@angular/core";
-import { Message } from "primeng/primeng";
+import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+
+import { FileUploader } from "ng2-file-upload";
+
+const URL: string = "api/files";
 
 @Component({
   selector: 'fs-file-upload',
   templateUrl: './fs.file.upload.html'
 })
-export class SimpleDemoComponent {
+export class UploadFileComponent implements OnInit {
+  @Output() uploaded = new EventEmitter();
+  public uploader: FileUploader = new FileUploader({ url: URL, autoUpload: true });
 
-  private uploadedFiles: any[] = [];
-  private msgs: Message[];
-
-  public constructor() {
-    console.log('SimpleDemoComponent');
+  ngOnInit(): void {
   }
 
-  onUpload(event) {
-    for ( let file of event.files ) {
-      this.uploadedFiles.push(file);
-    }
-
-    this.msgs = [];
-    this.msgs.push({ severity: 'info', summary: 'File Uploaded', detail: '' });
+  fireUploaded() {
+    this.uploaded.emit(null);
   }
 }
