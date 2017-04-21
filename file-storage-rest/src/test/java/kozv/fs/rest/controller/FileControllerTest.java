@@ -121,7 +121,7 @@ public class FileControllerTest {
     @Test
     public void shouldDeleteFile() {
         final ResponseEntity<Void> responseEntity =
-                restTemplate.exchange(FILE_URL, HttpMethod.DELETE, null, Void.class);
+                restTemplate.exchange(FILE_URL, HttpMethod.DELETE, null, Void.class, FILE_ID);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(NO_CONTENT);
         verify(fileStorageService).deleteFile(FILE_ID);

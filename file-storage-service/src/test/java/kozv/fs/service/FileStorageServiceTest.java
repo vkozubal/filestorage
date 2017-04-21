@@ -77,7 +77,7 @@ public class FileStorageServiceTest {
     @Test(expected = PersistentFileNotFoundException.class)
     public void shouldDeleteComment(){
         final String fileId = storeFile("scratchFile-1.txt").getFileId();
-        assertThat(fileId).isBlank();
+        assertThat(fileId).isNotBlank();
 
         final DataFile data = fileStorageService.findOne(fileId);
         assertThat(data).isNotNull();
