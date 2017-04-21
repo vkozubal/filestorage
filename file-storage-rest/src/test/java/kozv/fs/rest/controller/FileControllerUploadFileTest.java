@@ -90,7 +90,11 @@ public class FileControllerUploadFileTest {
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         Collection<FileAttributes> fileAttributesList = fileAttributesEntity.getBody().getContent();
         assertThat(fileAttributesList.size()).isEqualTo(1);
-        assertFileAttributes(fileAttributesList.iterator().next());
+        final FileAttributes fileAttrs = fileAttributesList.iterator().next();
+        assertFileAttributes(fileAttrs);
+        final Link downloadLink = fileAttrs.getLink("download");
+        assertThat(downloadLink.getHref()).endsWith("/api/files/" + FileTestConstants.FILE_ID);
+
     }
 
     @Test

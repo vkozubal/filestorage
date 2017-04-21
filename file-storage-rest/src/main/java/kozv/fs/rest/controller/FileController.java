@@ -12,10 +12,13 @@ import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -33,7 +36,9 @@ public class FileController implements IFilesClient {
 
     @Override
     public Resources<FileAttributes> findAll() {
-        return new Resources<>(fileStorageService.findAll());
+        final List<FileAttributes> all = fileStorageService.findAll();
+        all.forEach(this::addDownloadLink);
+        return new Resources<>(all);
     }
 
     @Override
@@ -77,8 +82,13 @@ public class FileController implements IFilesClient {
     private void addHateoasLinks(FileAttributes fileAttributes) {
         final String fileId = fileAttributes.getFileId();
         fileAttributes.add(linkTo(methodOn(getClass()).findOne(fileId)).withSelfRel());
-        fileAttributes.add(linkTo(methodOn(getClass()).serveFile(fileId)).withRel("download"));
+        addDownloadLink(fileAttributes);
         fileAttributes.add(linkTo(methodOn(CommentsController.class).getComments(fileId)).withRel("comments"));
+    }
+
+    private void addDownloadLink(FileAttributes fileAttributes) {
+        fileAttributes.add(linkTo(methodOn(getClass())
+                .serveFile(fileAttributes.getFileId())).withRel("download"));
     }
 
     private DataFile createDataFile(MultipartFile file, FileAttributes fileAttrs) {
