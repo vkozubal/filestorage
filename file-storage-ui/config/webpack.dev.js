@@ -8,7 +8,7 @@ module.exports = webpackMerge(commonConfig, {
 
   output: {
     path: helpers.root('dist'),
-    publicPath: 'http://localhost:8080/',
+    publicPath: 'http://localhost:8090/',
     filename: '[name].js',
     sourceMapFilename: '[name].map',
     chunkFilename: '[id].chunk.js'
@@ -23,8 +23,9 @@ module.exports = webpackMerge(commonConfig, {
     stats: 'minimal',
     proxy: {
       "/api": {
-        target: "http://localhost:8080/mock",
-        pathRewrite: {"^([^.?]+)(.*)$": "$1$2.json"} // service from mock
+        target: "http://localhost:8080",
+        // target: "http://localhost:8080/mock",
+        // pathRewrite: {"^([^.?]+)(.*)$": "$1$2.json"} // service from mock
       }
     }
   }
