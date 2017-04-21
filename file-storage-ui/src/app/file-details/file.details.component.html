@@ -16,10 +16,8 @@
 <div class="file-view-container">
   <div class="row">
     <div class="col-sm-8">
-      <pre>
-        {{ file | json }}
-      </pre>
 
+      <fs-file-preview [file]="file"></fs-file-preview>
     </div>
     <div class="col-sm-4">
       <div class="comments">
