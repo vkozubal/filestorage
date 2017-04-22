@@ -2,6 +2,7 @@ package kozv.fs.rest.controller;
 
 import kozv.fs.api.model.FileComment;
 import kozv.fs.service.api.ICommentsService;
+import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
 import static kozv.fs.rest.controller.FileTestConstants.ALL_FILES_URL;
@@ -40,7 +42,7 @@ public class CommentsControllerTest {
     private ICommentsService commentsService;
 
     @Test
-    public void shouldReturnFileComments() {
+    public void shouldCreateFileComments() {
         when(commentsService.createComment(anyString(), any(FileComment.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[1]);
 
@@ -49,7 +51,11 @@ public class CommentsControllerTest {
         assertThat(commentEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         final FileComment comment = commentEntity.getBody();
-        assertThat(comment.getLink(Link.REL_SELF).getHref()).endsWith(COMMENTS_URL + "/1");
+        assertSelfLink(comment);
+    }
+
+    private AbstractCharSequenceAssert<?, String> assertSelfLink(FileComment comment) {
+        return assertThat(comment.getLink(Link.REL_SELF).getHref()).endsWith(COMMENTS_URL + "/1");
     }
 
     @Test
@@ -83,13 +89,15 @@ public class CommentsControllerTest {
     @Test
     public void shouldGetAllComments() {
         when(commentsService.getComments(FILE_ID)).thenReturn(new ArrayList<>(Collections.singletonList(getFileComment())));
-        final ResponseEntity<Resources<FileComment>> comments = restTemplate
+        final ResponseEntity<Resources<FileComment>> commentsEntity = restTemplate
                 .exchange(COMMENTS_URL, HttpMethod.GET, null, new ParameterizedTypeReference<Resources<FileComment>>() {
                 });
 
         verify(commentsService).getComments(FILE_ID);
-        assertThat(comments.getBody().getContent().size()).isEqualTo(1);
-        assertThat(comments.getStatusCode()).isEqualTo(HttpStatus.OK);
+        final Collection<FileComment> comments = commentsEntity.getBody().getContent();
+        assertThat(comments.size()).isEqualTo(1);
+        assertSelfLink(comments.iterator().next());
+        assertThat(commentsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     private FileComment getFileComment() {

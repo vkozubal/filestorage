@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Collection;
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -23,13 +25,15 @@ public class CommentsController implements ICommentsClient {
 
     @Override
     public Resources<FileComment> getComments(@PathVariable String fileId) {
-        return new Resources<>(commentsService.getComments(fileId));
+        final Collection<FileComment> comments = commentsService.getComments(fileId);
+        comments.forEach(comment -> addSelfLink(fileId, comment));
+        return new Resources<>(comments);
     }
 
     @Override
     public FileComment createComment(@PathVariable String fileId, @RequestBody FileComment comment) {
         final FileComment entity = commentsService.createComment(fileId, comment);
-        entity.add(linkTo(methodOn(getClass()).getComment(fileId, entity.getCommentId())).withSelfRel());
+        addSelfLink(fileId, entity);
         return entity;
     }
 
@@ -48,5 +52,9 @@ public class CommentsController implements ICommentsClient {
                                      @RequestBody FileComment comment) {
         comment.setCommentId(commentId);
         return commentsService.updateComment(fileId, comment);
+    }
+
+    private void addSelfLink(String fileId, FileComment entity) {
+        entity.add(linkTo(methodOn(getClass()).getComment(fileId, entity.getCommentId())).withSelfRel());
     }
 }
