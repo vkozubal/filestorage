@@ -20,6 +20,7 @@ public interface ICommentsClient {
     FileComment createComment(@PathVariable String fileId, @RequestBody FileComment comment);
 
     @DeleteMapping("/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteComment(@PathVariable String fileId, @PathVariable String commentId);
 
     @ResponseBody

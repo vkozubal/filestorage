@@ -60,7 +60,8 @@ public class CommentsControllerTest {
 
     @Test
     public void shouldDeleteComment() {
-        restTemplate.delete(COMMENTS_URL + "/" + COMMENT_ID);
+        final ResponseEntity<Void> responseEntity = restTemplate.exchange(COMMENTS_URL + "/" + COMMENT_ID, HttpMethod.DELETE, null, Void.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(commentsService).deleteComment(FILE_ID, COMMENT_ID);
     }
 
