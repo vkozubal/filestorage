@@ -1,7 +1,9 @@
 import { Component } from "@angular/core";
+import { Http } from "@angular/http";
 import { ActivatedRoute } from "@angular/router";
-import { File, FileService} from "../common";
+import { File } from "../common";
 import { FileComment } from "../common/file";
+import { CommentsService } from "../common/comments.service";
 
 @Component({
   selector: 'fs-file-details',
@@ -9,29 +11,53 @@ import { FileComment } from "../common/file";
 })
 export class FileDetailsComponent {
   file: File;
+  comments: Array<FileComment>;
   comment: FileComment = new FileComment();
 
-  constructor(private route: ActivatedRoute, private service: FileService ) {
+  constructor(private route: ActivatedRoute,
+              private commentsService: CommentsService, private http: Http) {
+
     this.file = this.route.snapshot.data[ 'file' ];
+    this.comments = this.route.snapshot.data[ 'comments' ];
   }
 
   createMessage(event) {
-    console.log('create: ', event, this.file);
-    this.service.updateFile(this.file);
+    const that = this;
+    this.commentsService.createComment(this.file, event)
+      .then(comment => {
+          that.comments = that.comments || [];
+          that.comments.unshift(comment);
+          that.comment = new FileComment();
+        }
+      )
   }
 
   deleteMessage(event) {
-    console.log('delete: ', event, this.file);
-    this.service.updateFile(this.file);
+    const that = this;
+    this.commentsService.deleteComment(event).then(
+      () => {
+        const index = that.comments.findIndex(value => value.commentId === event.commentId);
+        if ( index > -1 ) {
+          that.comments.splice(index, 1);
+        }
+      }
+    );
   }
 
   updateMessage(event) {
-    console.log('update: ',event , this.file);
-    this.service.updateFile(this.file);
+    this.commentsService.updateComment(event)
+      .then(
+        () => {
+          // todo update comment
+        }
+      );
   }
 
-  resetComment(){
-    console.log('reset value: ');
+  resetComment() {
     this.comment.text = "";
+  }
+
+  asComment(response) {
+    return response.json() as FileComment
   }
 }

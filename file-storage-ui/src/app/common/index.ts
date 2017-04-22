@@ -5,5 +5,6 @@
  */
 export * from './file';
 export * from './file.service';
-export * from './files.resolver';
+export * from './resolvers';
 export * from './common.module';
+export * from './comments.service';

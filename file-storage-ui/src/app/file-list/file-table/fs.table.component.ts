@@ -18,8 +18,9 @@ export class TableComponent {
   onRowSelect(row){
     console.log('Row selected: ', row)
   }
+
   onRowDblclick(event){
-    this.router.navigate(['/files', event.data.id]);
+    this.router.navigate(['/files', event.data.fileId]);
   }
 
   public constructor(private route: ActivatedRoute, private router: Router) {

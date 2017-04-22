@@ -1,9 +1,13 @@
 import { NgModule } from "@angular/core";
-import { FileResolver, FilesResolver } from "./files.resolver";
+import { CommentsResolver, FileResolver, FilesResolver } from "./resolvers";
 import { FileService } from "./file.service";
+import { CommentsService } from "./comments.service";
 
 @NgModule({
-  providers: [ FilesResolver, FileResolver, FileService ]
+  providers: [
+    FilesResolver, FileResolver, CommentsService,
+    FileService, CommentsResolver
+  ]
 })
 export class CommonModule {
 }

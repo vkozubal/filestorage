@@ -1,8 +1,9 @@
 export class File {
-  id: string;
+  fileId: string;
   fileName: string;
   contentType: string;
-  metadata: FileMetadata
+  metadata: FileMetadata;
+  _links: Object
 }
 
 export class FileMetadata {
@@ -11,12 +12,13 @@ export class FileMetadata {
 }
 
 export class FileComment {
-  id: string;
+  commentId: string;
   text: string;
   creationDate: Date;
   updateDate: Date;
+  _links: Object;
 
-  public constructor(){
+  public constructor() {
     this.text = null;
   }
 }

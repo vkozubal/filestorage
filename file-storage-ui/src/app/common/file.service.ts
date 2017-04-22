@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
-import { File } from "./file";
+import { File, FileComment } from "./file";
 
 import "rxjs/add/operator/toPromise";
 
@@ -15,7 +15,7 @@ export class FileService {
     return this.http.get(FileService.filesUrl)
       .toPromise()
       .then(response => {
-        return response.json() as File[];
+        return response.json()._embedded.fileAttributesList as File[];
       }).catch(FileService.handleError)
   }
 
@@ -25,14 +25,6 @@ export class FileService {
       .then(response => {
         return response.json() as File
       }).catch(FileService.handleError);
-  }
-
-  updateFile(file: File): Promise<File> {
-    return this.http.put(`${FileService.filesUrl}/${file.id}/attributes`, file)
-      .toPromise()
-      .then((response) => {
-        return response.json() as File
-      }).catch(FileService.handleError)
   }
 
   private static handleError(error: any): Promise<any> {
