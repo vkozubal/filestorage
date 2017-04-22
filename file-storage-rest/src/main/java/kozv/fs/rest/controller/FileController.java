@@ -37,7 +37,7 @@ public class FileController implements IFilesClient {
     @Override
     public Resources<FileAttributes> findAll() {
         final List<FileAttributes> all = fileStorageService.findAll();
-        all.forEach(this::addDownloadLink);
+        all.forEach(this::addHateoasLinks);
         return new Resources<>(all);
     }
 
@@ -82,13 +82,8 @@ public class FileController implements IFilesClient {
     private void addHateoasLinks(FileAttributes fileAttributes) {
         final String fileId = fileAttributes.getFileId();
         fileAttributes.add(linkTo(methodOn(getClass()).findOne(fileId)).withSelfRel());
-        addDownloadLink(fileAttributes);
+        fileAttributes.add(linkTo(methodOn(getClass()).serveFile(fileAttributes.getFileId())).withRel("download"));
         fileAttributes.add(linkTo(methodOn(CommentsController.class).getComments(fileId)).withRel("comments"));
-    }
-
-    private void addDownloadLink(FileAttributes fileAttributes) {
-        fileAttributes.add(linkTo(methodOn(getClass())
-                .serveFile(fileAttributes.getFileId())).withRel("download"));
     }
 
     private DataFile createDataFile(MultipartFile file, FileAttributes fileAttrs) {

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 @EnableAutoConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = FileController.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FileControllerUploadFileTest {
+public class FileControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -52,6 +52,7 @@ public class FileControllerUploadFileTest {
         assertThat(fileAttributesEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CREATED);
 
         then(fileStorageService).should().save(any(DataFile.class));
+
         final FileAttributes fileAttrs = fileAttributesEntity.getBody();
 
         assertFileAttributes(fileAttrs);
@@ -92,9 +93,7 @@ public class FileControllerUploadFileTest {
         assertThat(fileAttributesList.size()).isEqualTo(1);
         final FileAttributes fileAttrs = fileAttributesList.iterator().next();
         assertFileAttributes(fileAttrs);
-        final Link downloadLink = fileAttrs.getLink("download");
-        assertThat(downloadLink.getHref()).endsWith("/api/files/" + FileTestConstants.FILE_ID);
-
+        assertFileLinks(fileAttrs);
     }
 
     @Test
@@ -117,17 +116,21 @@ public class FileControllerUploadFileTest {
 
     private void assertFileLinks(FileAttributes fileAttrs) {
         final Link selfLink = fileAttrs.getLink(Link.REL_SELF);
-        assertThat(selfLink.getHref()).endsWith("/api/files/{fileId}/attributes");
+        assertThat(selfLink.getHref()).endsWith("/api/files/" + FILE_ID + "/attributes");
 
         final Link downloadLink = fileAttrs.getLink("download");
-        assertThat(downloadLink.getHref()).endsWith("/api/files/{fileId}");
+        assertThat(downloadLink.getHref()).endsWith("/api/files/" + FILE_ID);
 
         final Link commentsLink = fileAttrs.getLink("comments");
-        assertThat(commentsLink.getHref()).endsWith("/api/files/{fileId}/comments");
+        assertThat(commentsLink.getHref()).endsWith("/api/files/" + FILE_ID + "/comments");
     }
 
     private void setupMock() {
         when(fileStorageService.save(any(DataFile.class)))
-                .thenAnswer(invocationOnMock -> ((DataFile) invocationOnMock.getArguments()[0]).getFileAttrs());
+                .thenAnswer(invocationOnMock -> {
+                    final FileAttributes fileAttrs = ((DataFile) invocationOnMock.getArguments()[0]).getFileAttrs();
+                    fileAttrs.setFileId(FILE_ID);
+                    return fileAttrs;
+                });
     }
 }
